@@ -1,0 +1,21 @@
+{
+    "name": "api-services-ems",
+    "version": "1.0.0",
+    "description": "Backend API services for Election Management System",
+    "main": "./app.js",
+    "scripts": {
+        "dev": "",
+        "start": "yarn run dev"
+    },
+    "dependencies": {
+
+    },
+    "devDependencies": {
+
+    },
+    "engines": {
+        "node": "12.6.1",
+        "npm": "6.13.4",
+        "yarn": 
+    }
+}
