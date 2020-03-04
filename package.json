@@ -14,7 +14,21 @@
         "npm": "6.13.4",
         "yarn": ""
     },
-    "repository": "",
-    "author": "Blockchain Capstone",
-    "license": "MIT"
+    "repository": "https://bitbucket.org/blockchainvotes/api-services/",
+    "contributors": [
+        {
+            "name": "Kevin Wei",
+            "email": "weiyih@sheridancollege.ca"
+        },
+        {
+            "name": "Mohammed Patla",
+            "email": "patla@sheridancollege.ca"
+        },
+        {
+            "name": "Navneet Singh",
+            "email": "sing5831@sheridancollege.ca"
+        }
+    ],
+    "license": "MIT",
+    "private": true
 }
