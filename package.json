@@ -1,5 +1,5 @@
 {
-    "name": "api-services-ems",
+    "name": "api-services",
     "version": "1.0.0",
     "description": "Backend API services for the election management system",
     "main": "./app.js",
