@@ -1,21 +1,20 @@
 {
     "name": "api-services-ems",
     "version": "1.0.0",
-    "description": "Backend API services for Election Management System",
+    "description": "Backend API services for the election management system",
     "main": "./app.js",
     "scripts": {
         "dev": "",
         "start": "yarn run dev"
     },
-    "dependencies": {
-
-    },
-    "devDependencies": {
-
-    },
+    "dependencies": {},
+    "devDependencies": {},
     "engines": {
-        "node": "12.6.1",
+        "node": "12.16.1",
         "npm": "6.13.4",
-        "yarn": 
-    }
+        "yarn": ""
+    },
+    "repository": "",
+    "author": "Blockchain Capstone",
+    "license": "MIT"
 }
