@@ -8,7 +8,9 @@
         "start": "yarn run dev"
     },
     "dependencies": {
-        "express": "^4.17.1"
+        "express": "^4.17.1",
+        "fabric-client": "^1.4.7",
+        "fabric-network": "^1.4.7"
     },
     "devDependencies": {},
     "engines": {
