@@ -8,24 +8,42 @@ const express = require('express');
 const HOST = '127.0.0.1';
 const PORT = 8080;
 
+
+// VerificationController - Voter List DB
+
+// AuthenticationController - User DB
+
+// ElectionController - Election DB
+const electionController = require('./TransactionController.js')
+
+
 // App
 const app = express();
 app.use(express.urlencoded())
 // const loginHandler = LoginController()
+const transactionController = TransactionController()
 
 app.get('/', (req, res) => {
   //DO NOTHING
 });
 
 // Login Controller
-// TODO - OAuth
+// TODO - OAuth or Auth0 with JWT tokens
 // TODO - Brute force attack logins
 app.post('/api/login', (req, res) => {
   // loginHandler
   res.send('Login');
 });
 
+
+// Requires token
 app.post('/api/submit', (req, res) => {
+  // CHECK TOKEN
+  // Decode request and vote
+  // Create vote object
+  // Create Transaction Object
+  // Submit Vote
+  // Register event listener
 
 });
 

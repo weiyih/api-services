@@ -10,7 +10,8 @@
     },
     "dependencies": {
         "express": "^4.17.1",
-        "fabric-network": "^2.0.0-snapshot.344"
+        "fabric-network": "^2.0.0-snapshot.344",
+        "nano": "^8.2.2"
     },
     "devDependencies": {},
     "engines": {
