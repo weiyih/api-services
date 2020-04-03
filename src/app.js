@@ -8,18 +8,17 @@ const express = require('express');
 const HOST = '127.0.0.1';
 const PORT = 8080;
 
+// App
+const app = express();
+app.use(express.urlencoded())
 
 // VerificationController - Voter List DB
 
 // AuthenticationController - User DB
 
 // ElectionController - Election DB
-const electionController = require('./TransactionController.js')
+// const electionController = require()
 
-
-// App
-const app = express();
-app.use(express.urlencoded())
 // const loginHandler = LoginController()
 const transactionController = TransactionController()
 
@@ -38,8 +37,10 @@ app.post('/api/login', (req, res) => {
 
 // Requires token
 app.post('/api/submit', (req, res) => {
-  // CHECK TOKEN
+  // TODO - CHECK TOKEN
   // Decode request and vote
+
+  
   // Create vote object
   // Create Transaction Object
   // Submit Vote

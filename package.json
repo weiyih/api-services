@@ -6,14 +6,17 @@
     "scripts": {
         "dev": "node ./src/app.js",
         "build": "yarn install",
-        "start": "yarn run dev"
+        "start": "yarn run dev",
+        "test": "mocha"
     },
     "dependencies": {
         "express": "^4.17.1",
         "fabric-network": "^2.0.0-snapshot.344",
         "nano": "^8.2.2"
     },
-    "devDependencies": {},
+    "devDependencies": {
+        "mocha": "^7.1.1"
+    },
     "engines": {
         "node": "12.16.1",
         "npm": "6.13.4",
