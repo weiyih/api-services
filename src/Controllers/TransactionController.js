@@ -16,9 +16,12 @@ class TransactionController {
         this.contract = null; // Contract
     }
 
-    setup() {
-        setupWallet();
-        connectGateway();
+    async init() {
+        this.setupWallet();
+
+        this.setupGateway();
+        this.setupNetwork();
+        this.setupContract();
     }
 
     // Identity setup
@@ -36,21 +39,33 @@ class TransactionController {
         // await wallet.put('alice', identity);
     }
 
-
     async setupGateway() {
         // TODO - Timeout retry
-        await this.gateway.connect(commonConnectionProfile, gatewayOptions)
+        try {
+            await this.gateway.connect(commonConnectionProfile, gatewayOptions)
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     async setupNetwork() {
         // TODO - Migrate to discovery service
-        const channelName = 'channelName';
-        this.network = await this.gateway.getNetwork(channelName);
+        try {
+            const channelName = 'election-name';
+            this.network = await this.gateway.getNetwork(channelName);
+        } catch (error) {
+            console.log(error);
+            throw new Error(error);
+        }
     }
 
-    setupContract() {
-        const chaincodeId = '';
-        this.network.getContract(chaincodeId);
+    async setupContract() {
+        try {
+            const chaincode = 'election-name-contract';
+            this.contract = await this.network.getContract(chaincode);
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     // Cleanup and diconnect gateway
@@ -61,20 +76,29 @@ class TransactionController {
     // Perform transaction
     // userVote : Vote object
     async submitTransaction(userVote) {
-
-        // let vote = JSON.parse(userVote);  //TODO - Move to app.js
-        const transactionName = "record";
-
+        let voteArgs = arg1, arg2, arg3
         try {
+            const transaction = "record";
             // equivalent to createTransaction(name).submit()
-            await this.contract.submitTransaction(transactionName)
-        
-        // Throws TimeoutError if the transaction was successfully submitted to the orderer but timed out before a commit event was received from peers. 
-        } catch(TimeoutError) {
-            await this.contract.evaluateTransction(vote)
+            let submitResults = await this.contract.submitTransaction(transaction, voteArgs);
+            // TODO - 
+            if (submitResults) {
+                console.log(submitResults);
+                // return { "result" : "success"};
+                return true;
+            } else {
+                console.log(submitResults);
+                // return { "result" : "failed"};
+                return false;
+            }
+
+        } catch (error) {
+            // TimeoutError if the transaction was successfully submitted to the orderer but timed out before a commit event was received from peers. 
+            if (error instanceof TimeoutError) {
+                // evaluate peers to see if transaction is on peers
+                let results = await this.contract.evaluateTransction(voteArgs)
+                console.log(results);
+            }
         }
-
     }
-
-
 }
