@@ -1,0 +1,70 @@
+openapi: '3.0.0'
+info:
+    title: Transaction Server API
+    description: A sample API
+    version: 1.0.0
+
+servers:
+    - url: /v1
+paths:
+    /election:
+        summary: Returns list of elections.
+        responses:
+            '200':
+                description: JSON array of election details
+                content:
+                    application/json:
+                        schema:
+                            type: array
+                            items:
+                                type: string
+            default:
+                description: Unexpected error
+                content:
+                    application/json:
+                        schema:
+                            # $ref: '#/components/schemas/Error'
+    /submit:
+        post:
+            description: Submits vote to blockchain network
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        # $ref: '#/components/schema/Vote'
+
+components:
+  schemas:
+    Vote:
+      required:
+        - id
+        - name
+        - type
+      properties:
+        id:
+          readOnly: true
+          type: number
+        name:
+          type: string
+        tag:
+          type: string
+        type:
+          $ref: '#/components/schemas/PetType'
+
+    Error:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key

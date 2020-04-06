@@ -7,8 +7,6 @@ RUN curl -fSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$
     && ln -snf /opt/yarn-v$YARN_VERSION/bin/yarnpkg /usr/local/bin/yarnpkg \
     && rm yarn-v$YARN_VERSION.tar.gz
 
-
-
 # Create app directory
 WORKDIR /usr/src/transaction-client
 
@@ -25,4 +23,4 @@ RUN yarn install
 COPY . .
 
 EXPOSE 8080
-CMD [ "yarn", "./src/app.js" ]
+CMD [ "yarn", "start" ]
