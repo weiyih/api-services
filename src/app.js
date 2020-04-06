@@ -78,12 +78,11 @@ app.post('/v1/submit', (req, res) => {
 
 });
 
-const serverOptions = {
-  key: fs.readFileSync('./config/server-key.pem'),
-  cert: fs.readFileSync('./config/server-cert.pem'),
-  
+// const serverOptions = {
+//   key: fs.readFileSync('./config/server-key.pem'),
+//   cert: fs.readFileSync('./config/server-cert.pem'),
+// }
 
-}
 // https.createServer({
 //   key: fs.readFileSync(),
 //   cert: fs.readFileSync()
