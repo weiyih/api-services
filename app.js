@@ -1,8 +1,23 @@
-const http = require('http');
-const readline = require('readline');
+'use strict'; // No undeclared variable usage
 
-const hostname = '127.0.0.1';
-const port = 8080;
+// const http = require('http');
+// const readline = require('readline'); 
+const express = require('express')
+
+// SERVER CONFIG
+// TODO - setup dev and deployed host:port 
+const HOST = '127.0.0.1';
+const PORT = 8080; 
+
+
+// App
+const app = express();
+app.get('/', (req, res) => {
+  res.send('Hello World');
+});
+
+app.listen(PORT, HOST);
+console.log(`Running on http://${HOST}:${PORT}`);
 
 // const args = process.argv.slice(2)
 // console.log(args)
@@ -22,16 +37,10 @@ const port = 8080;
 //     process.exitCode = 0
 // })    
 
-const userInput = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-  })
-
-
-userInput.question(`What's your name?`, name => {
-    console.log(`Hi ${name}!`)
-    userInput.close()
-  })
+// const userInput = readline.createInterface({
+//     input: process.stdin,
+//     output: process.stdout
+//   })
 
 // SIGTERM -> Gracefully terminate2
 process.on('SIGTERM', () => {
