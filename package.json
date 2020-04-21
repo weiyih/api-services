@@ -15,7 +15,7 @@
         "express-openapi-validator": "^3.11.0",
         "fabric-network": "2.1.1-snapshot.355",
         "helmet": "^3.22.0",
-        "mysql": "^2.18.1"
+        "mysql2": "^2.1.0"
     },
     "devDependencies": {
         "mocha": "^7.1.1"
