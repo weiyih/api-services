@@ -1,4 +1,4 @@
-# CouchDB Setup
+# CouchDB Setup - UNUSED
 
 Currently deploying CouchDB installation through package repository as a single node setup
 
