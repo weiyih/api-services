@@ -8,7 +8,7 @@ RUN curl -fSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$
     && rm yarn-v$YARN_VERSION.tar.gz
 
 # Create app directory
-WORKDIR /usr/src/transaction-client
+WORKDIR /usr/src/voting-system
 
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
