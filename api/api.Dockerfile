@@ -1,4 +1,4 @@
-FROM node:12.16.1
+FROM node:12.18.0
 
 ENV YARN_VERSION 1.22.4
 RUN curl -fSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
