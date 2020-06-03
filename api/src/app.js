@@ -1,163 +1,235 @@
 'use strict'; // No undeclared variable usage
-// import express from 'express';
-const DatabaseController = require('./Controllers/DatabaseController');
-
 
 const express = require('express');
 const helmet = require('helmet'); // https://helmetjs.github.io
 const bodyParser = require('body-parser'); // https://github.com/expressjs/body-parser body parsing middleware
-const uuidv4 = require('uuid');
+const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session')
 const cors = require('cors'); // https://github.com/expressjs/cors CORS middleware
 const morgan = require('morgan'); // https://github.com/expressjs/morgan HTTP request logger middleware
-// const path = require('path');
+const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
 const fs = require('fs');
-// const cookieParser = require('cookie-parser');
+const path = require('path');
 // const logger = require('morgan');
-const https = require('https');
-const http = require('http');
+const ElectionDB = require('./controllers/ElectionDBController');
+const UserDB = require('./controllers/UserDBController');
+require('dotenv').config();
 
+const {
+  JWT_EXPIRY_SECOND,
+  JWT_PRIVATE_KEYFILE,
+} = process.env;
 
+const JWT_PRIVATE_KEY = fs.readFileSync(
+  path.resolve(__dirname, "./config/ec_private.pem")
+);
 // const OpenApiValidator = require('express-openapi-validator').OpenApiValidator;
-const app = express();
-const PORT = 8080;
-const SERVER_TIME = new Date()
 
+
+/**
+ * Express Settings
+ */
+const app = express();
+// app.use(cookieSession({
+//   name: 'session',
+//   keys: ['token'],
+//   maxAge: JWT_EXPIRY_SECOND,
+// }))
+app.use(cookieParser());
 app.use(helmet()); // Helmet middleware to enforce HSTS
 app.use(bodyParser.json()); //parse JSON bodies into JS objects
 app.use(cors());
 app.use(morgan('combined'));
 // app.use(bodyParser.urlencoded({}))
-// app.use(express.urlencoded())
 
-app.get('/', (req, res) => {
-  res.send('GET request to server');
+
+/**
+ * POST REQUEST
+ * Response: Success or Failed
+ */
+app.post('/v1/signup', (req, res) => {
+  const user = req.body
+
+  // TODO - Verify user credentials and match to voter DB
+  UserDB.createUser(user, 'voter-uuid-placeholder')
+    .then((res) => {
+      const response = {
+        'status': true,
+        'data': {
+          'message': 'signup successful',
+          'user': res.user_id
+        }
+      }
+      res.send(response);
+    }).catch(error => {
+      const response = {
+        'status': true,
+        'data': {
+          'message': 'signup unsuccessful',
+          'error': error
+        }
+      }
+      res.send(response);
+    });
 })
 
-// App loads upcoming election details
-app.get('/v1/election', (req, res) => {
-  /* TODO
-  1. Load details from Election DB formated to JSON object
-  2. Details loaded based on:
-  - Voter List DB - District/Ward
-  - User DB -> 
-  */
-  res.json(
-    { electionId: 100, name: 'Oakville Municipal Election 2020', startDate: Date.UTC(2020, 1, 1), endDate: Date.UTC(2020, 12, 31, 23, 59, 59), advStartDate: Date.UTC(2020, 1, 1), advEndDate: Date.UTC(2020, 12, 31, 23, 59, 59) });
-});
-
-// Returns ballot candidates based on id
-app.get('/v1/ballot', (req, res, next) => {
-  /*
-  TODO
-  1. Load candidates from Election DB - Candidates based on ward id
-  */
-  res.json([
-    { candidateId: 10001, candidateName: 'Oscar Grouch' },
-    { candidateId: 10002, candidateName: 'Count von Count' },
-    { candidateId: 10003, candidateName: 'Cookie Monster' },
-    { candidateId: 10004, candidateName: 'Big Bird' },
-    { candidateId: 10005, candidateName: 'Kermit Frog' }
-  ])
-});
 
 // Login Controller
-// TODO - OAuth or Auth0 with JWT tokens
-// TODO - Brute force attack logins
+// JWT_EXPIRY_SECOND = 10 minutes
 app.post('/v1/login', (req, res) => {
-  // loginHandler
-  res.send('Login');
+
+  // TODO Login with user credentials
+  const user = req.body;
+  console.log(user);
+
+  let response = {
+    status: "success",
+    message: "logged in",
+  };
+  // Generate JWT based on user_id
+  jwt.sign({ 'user_id': '222078a2-054e-4cc0-b8ae-c0693eadbafb' },
+    JWT_PRIVATE_KEY,
+    { expiresIn: JWT_EXPIRY_SECOND, algorithm: 'ES256' },
+    function (err, token) {
+      if (err) { console.log(err) }
+      // Set cookie as token string and send
+      console.log(token);
+      res.cookie('token', token, { maxAge: JWT_EXPIRY_SECOND });
+      res.send(response);
+    });
 });
 
-// Requires token
+
+/**
+ * GET REQUEST
+ * Response: Election JSON object
+ */
+app.get('/v1/election', (req, res) => {
+  const data = ElectionDB.electionData;
+  // console.log(data);
+  // TODO - PKI encrypt data
+  res.json(data)
+});
+
+
+/**
+ * GET REQUEST
+ * Response: Ballot JSON object
+ */
+app.get('/v1/ballot', (req, res) => {
+  const data = ElectionDB.ballotData;
+  res.json(data);
+});
+
+/**
+ * POST REQUEST
+ * Submit ballot
+ */
 app.post('/v1/submit', (req, res) => {
 
+  // Validate JWT
+  // Get user_id
+  const user_id = '222078a2-054e-4cc0-b8ae-c0693eadbafb';
 
-  /* TODO 
-    1. JWT Web Token Validation
-    2. Extract data object from req
-    3. Decrypt data object
-    4. Extract vote object
-    5. Validate vote params
-    6. Submit vote
-  */
+  // const ballot = req.body;
+  // Validate ballot JWT from user
+  // const userPublicKey = UserDB.getPublicKey(user.user_id);
+  const ballot = {
+    'election_id': '9cd5f582-75e5-4bee-b451-e5417c18e761',
+    'ward': "1",
+    'selected_candidate': '2d8248ab-a831-4b5c-a3b2-6c5ef317731a',
+    'timestamp': Date().now(),
+  }
 
-  // TODO - Verify user
-  const submit_id = uuid
-  let message = ""
-  let status = "sucess"
+  let response = {
+    "success": true,
+    "data": {
+      "message": ''
+    }
+  }
+  let suceess;
+  let message;
 
-  // const data = req.body;
-  // TODO - Decrypt data object
-  // const vote = data.json();
-  // console.log(vote);
+  //Validate ballot before validating user 1
+  if (validateBallot(ballot)) {
+    // Load User
+    UserDB.loadUser(user_id)
+      // Load voter information and check voter status
+      .then(function (user) {
+        const voterId = user.voter_id;
+        // return VoterDB.getVoterStatus(voter_id);
+        // Temporary dummy data
+        return {
+          voter_id: '3b241101-e2bb-4255-8caf-4136c566a962',
+          ward: 1,
+          vote_status: 'No',
+        }
+      })
+      // Check voter vote status
+      // Yes - Notify user
+      // Pending - Notify user
+      // No - process vote
+      .then(function (voter) {
+        const voteStatus = voter.vote_status;
+        // TODO Create custom Error
+        if (voteStatus === 'Yes') {
+          throw new Error('user has voted');
+        }
+        if (voteStatus === 'Pending') {
+          throw new Error("vote pending");
+        }
+        return //Submit Vote
+      }
+        .catch(error => {
+          suceess = false;
+          if (error.message == 'user has voted') {
+            message = 'user voted';
+          } else if (error.message == 'vote pending')
+            message = 'vote pending';
+        }));
+  }
+
   const vote = {
-    timestamp: SERVER_TIME.now(),
-    electionId: 100,
-    candidateId: 10001,
+    user_timestamp: ballot.timestamp,
   }
-  const ADVANCED_POLL_START_TIME = 1577836800; // 1/1/2020 @ 12:00am
-  const ADVANCED_POLL_END_TIME = 1609372800; // 12/31/2020 @ 12:00am
 
-  // PROCESS VOTE
-  do {
-    let serverTimestamp = SERVER_TIME.now();
-    // Valid Voting Time
-
-    if ((serverTimestamp < ADVANCED_POLL_START_TIME || serverTimestamp > ADVANCED_POLL_END_TIME)) {
-      status = "error";
-      message = "invalid voting period"
-      break;
-    }
-
-    // Time Check
-    if ((serverTimestamp - vote.timestamp) <= MAX_TIMESTAMP_DIFF) {
-
-    }
-  }
-  while (false)
-
-  // Check candidates with districts
-
-  // Response Message
-  const res_message = {
-    status: status,
-    message: message,
-  };
-  return res.send(res_message);
 });
 
-app.use((req, res, next) => {
-  res.status(404).send({
-    error: "Not found"
-  })
-})
-
-
-// Using self-signed cert for SSL due to lack of domain name
-// Migrate to certbot for CA generation with domain name
-// const serverOptions = {
-//   key: fs.readFileSync('./config/server-key.pem'),
-//   cert: fs.readFileSync('./config/server-cert.pem'),
-// }
-
-// https.createServer({
-//   key: fs.readFileSync(),
-//   cert: fs.readFileSync()
-// }, app);
-
-
-// TODO - Initialize DB connection and BN network connection before starting server
-// VerificationController - Voter List DB
-// AuthenticationController - User DB
-// ElectionController - Election DB
-// const transactionController = TransactionController()
-
-const database = new DatabaseController()
-const electionData = database.getElections()
-
-const server = http.createServer(app);
-server.listen(PORT, () => {
-  console.log('Listening on HTTP port ' + PORT);
+// Default route - 403
+app.use((req, res) => {
+  res.status(403).end()
 });
 
+// Check if ballot has incorrect data
+const validateBallot = (ballot) => {
+  // Invalid election id
+  if (ballot.election_id !== ElectionDB.electionData.election_id) {
+    return false;
+  }
 
+  // Timestamp and election dates
+  const currentTime = Date().now()
+  if (currentTime - ballot.timestamp >= 30000) { return false; }
+
+  // Advanced polling enabled
+  if (ElectionDB.electionData.advanced_polling) {
+    if (
+      (currentTime < ElectionDB.electionData.advanced_start_date) ||
+      (currentTime > ElectionDB.electionData.advanced_end_date)
+    ) { return false; }
+  } else {
+    if (
+      (currentTime < ElectionDB.electionData.election_start_date) ||
+      (currentTime > ElectionDB.electionData.election_end_date)
+    ) { return false; }
+  }
+
+  // Check selected candidate is within ward
+  if (!ElectionDB.ballotData.candidate.include(ballot.selected_candidate)) {
+    return false;
+  }
+  return true;
+}
+
+module.exports = app;
