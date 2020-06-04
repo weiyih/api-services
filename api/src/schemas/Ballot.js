@@ -21,7 +21,7 @@ const ballotSchema = new mongoose.Schema({
         type: String,
     },
     ward: {
-        type: Number
+        type: String,
     },
     candidate: [candidateSchema],
 });
