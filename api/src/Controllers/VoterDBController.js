@@ -47,7 +47,7 @@ class VoterDB {
         });
 
         //Register schema to connection
-        Voter = this.conn.model('user', voterSchema, 'user');
+        Voter = this.conn.model('voter', voterSchema, 'voter');
     }
 
     // Retrieves the voter based on the voter uuid

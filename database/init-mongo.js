@@ -39,7 +39,7 @@ voterDB.voter.insert({
     street_suffix: 'Rd',
     town: 'Oakville',
     zip_code: 'L6H2L1',
-    ward: 1,
+    ward: '1',
     vote_status: 'No',
     vote_online: 'No',
     __v: 0 
