@@ -100,7 +100,6 @@ class TransactionController {
     async queryAllVotes() {
         try {
             const result = await this.contract.submitTransaction('queryAllVotes');
-            // const result = await contract.submitTransaction('readVote', 'VOTE0');
             // console.log(result.toString());
             return (result.toString());
         } catch (error) {
@@ -115,6 +114,7 @@ class TransactionController {
                 const resJSON = JSON.parse(result);
                 const votesLen = resJSON.length;
                 key = votesLen;
+                console.log(key);
                 return;
             }).catch((err) => {
                 console.log(err);
@@ -129,7 +129,6 @@ class TransactionController {
         } catch (error) {
             console.log(error);
         }
-
 
     }
 
