@@ -56,7 +56,7 @@ class UserDB {
         const res = await query.exec();
 
         if (!res) {
-            return false;
+            return null;
         }
         return res;
     }
