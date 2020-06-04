@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 const electionSchema = require('../schemas/Election');
 const ballotSchema = require('../schemas/Ballot');
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require('./node_modules/uuid');
 // const { app }= require('../app');
-require('dotenv').config();
+require('./node_modules/dotenv').config();
 
 /**
  * Mongoose Schema

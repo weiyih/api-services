@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const voterSchema = require('../schemas/Voter');
-require('dotenv').config();
+require('./node_modules/dotenv').config();
 
 /**
  * Mongoose Schema
