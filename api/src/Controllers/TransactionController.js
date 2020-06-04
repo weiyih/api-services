@@ -1,6 +1,6 @@
 // https://hyperledger.github.io/fabric-sdk-node/master/module-fabric-network.html
 
-const { FileSystemWallet, Gateway, TimeoutError, X509WalletMixin } = require('./node_modules/fabric-network');
+const { FileSystemWallet, Gateway, TimeoutError, X509WalletMixin } = require('fabric-network');
 const fs = require('fs');
 const path = require('path');
 
