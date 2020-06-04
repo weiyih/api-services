@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const userSchema = require('../schemas/User');
 const { v4: uuidv4 } = require('uuid');
-require('./node_modules/dotenv').config();
+require('dotenv').config();
 
 /**
  * Mongoose Schema
