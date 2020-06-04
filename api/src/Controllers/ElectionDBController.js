@@ -79,6 +79,7 @@ class ElectionDB {
             .then(res => {
                 this.ballotData = res;
                 // console.log('Ballot: ', this.ballotData);
+                return;
             });
     }
 
@@ -111,7 +112,7 @@ class ElectionDB {
     }
 
     // Testing insertion
-    async createElection() {
+    async testCreateElection() {
         let electionUUID = uuidv4()
         await Election.create({
             election_id: electionUUID,
