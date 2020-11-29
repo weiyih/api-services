@@ -73,7 +73,7 @@ res.json
           return undefined;
         } return value;
       });
-      res.json(data);
+      res.json(JSON.parse(jsonData));
     } catch (error) {
       // TODO - handle error
       console.log(error);
