@@ -7,11 +7,11 @@ const fs = require('fs');
 const path = require('path');
 
 ElectionDB.loadData();
-Transaction.setup()
-  .then(function () {
-    Transaction.updateVoteKey();
-    return;
-  });
+// Transaction.setup()
+//   .then(function () {
+//     Transaction.updateVoteKey();
+//     return;
+//   });
 
 
 const PORT = 8080;

@@ -136,8 +136,10 @@ app.post('/v1/login', (req, res) => {
  * GET REQUEST
  * Response: Election JSON object
  */
-app.get('/v1/election', authenticateJWT, (req, res) => {
+// app.get('/v1/election', authenticateJWT, (req, res) => {
+  app.get('/v1/election', (req, res) => {
   const data = ElectionDB.electionData;
+  console.log(data);
   res.json(data)
 });
 
@@ -173,7 +175,7 @@ app.get('/v1/ballot', (req, res) => {
           'message': 'unable to submit vote',
         }
       }
-      res.send(response);
+      res.send(response); 
 
     } else {
       //req.verified is set from authenticateJWT

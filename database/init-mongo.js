@@ -24,6 +24,7 @@ userDB.user.insert({
     device_id: '',
     driver_license: 'W2247-79009-10131',
     __v: 0 
+    // verified
 })
 
 // Mock Voter associated with User
@@ -57,6 +58,8 @@ electionDB.election.insert({
     advanced_polling: true,
     advanced_start_date: '2020-01-01T00:00:00.000Z',
     advanced_end_date: '2020-12-31T24:00:00.000Z',
+    // channel_name
+    // contract_name
     __v: 0
 })
 

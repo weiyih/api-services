@@ -74,7 +74,7 @@ class TransactionController {
     // userVote : Vote object
     async submitTransaction(ballot) {
         let voteKey = 'VOTE' + key;
-        this.key++;
+        key++;
         try {
             let submitResults = await this.contract.submitTransaction('createVote', voteKey, ballot.election_id, ballot.ward, ballot.selected_candidate, ballot.timestamp);
             // TODO - 

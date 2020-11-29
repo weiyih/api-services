@@ -16,7 +16,7 @@ services:
       - ./database/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
       - mongo-volume:/data/db
 
-
+  # Public access
   api:
     container_name: voting-node
     build: 
@@ -27,7 +27,8 @@ services:
       - 80:8080
     links:
       - db
-  
+
+  # DEV TESTING purposes only - REMOVE
   db-admin-dev:
     container_name: dev-mongo-express
     image: mongo-express:latest
@@ -40,6 +41,7 @@ services:
       - 8081:8081  
     links:
       - db
+
 volumes:
   mongo-volume:
     
