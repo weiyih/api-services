@@ -27,13 +27,13 @@ const electionSchema = new Schema({
         type: Date
     },
     channel_name: {
-        type: string
+        type: String
     },
     contract_name: {
-        type: string
+        type: String
     },
     created_at: {
-        type: string
+        type: String
     },
     locked: {
         type: Number
