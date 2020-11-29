@@ -1,32 +1,30 @@
 const DBFactory = require("./DBFactory");
 const electionSchema = require("../schemas/Election");
 const ballotSchema = require("../schemas/Ballot");
+const mongoose = require("mongoose");
 
 require("dotenv").config();
 
-class ElectionDB {
-  static Election;
-  static Ballot;
+// Models
+let Election;
+let Ballot;
 
+class ElectionDB {
   constructor() {
-    const {
-      ELECTION_DB,
-    } = process.env;
+
+    const { ELECTION_DB } = process.env;
 
     try {
-      this.conn = DBFactory.create(ELECTION_DB);
+      const db = DBFactory.create(ELECTION_DB);
+      // Buffer registering models
+      db.conn.on("connected", () => {
+        console.log(`Registering ${ELECTION_DB} models`)
+        Election = db.conn.model("election", electionSchema, "election");
+        Ballot = db.conn.model("ballot", ballotSchema, "candidates");
+      })
 
-      // Register model schema to connection
-      this.conn.on("connected", () => {
-        this.Election = this.conn.model("election", electionSchema, "election");
-        this.Ballot = this.conn.model("ballot", ballotSchema, "candidates");
-      });
-
-      this.conn.on("error", (error) => {
-        console.log("Connection Error:", error);
-      });
     } catch (error) {
-      console.log("ERROR: ", error);
+      console.log(error);
     }
   }
 
@@ -35,12 +33,21 @@ class ElectionDB {
    */
   async getElection(req, res, next) {
     // Build query
-    const query = this.Election.find().where("disabled").equals("1");
+    
+    const query = Election.find().where("disabled").equals(1);
     // .where('election_end_date').gt()
 
     try {
       const data = await query.exec();
-      return res.json(data);
+
+      // Remove mongodb object_id(_id) and version(_v)
+      const jsonData = JSON.stringify(data, (key,value) => {
+        if (key === '_id' || key === "__v") {
+          return undefined;
+        } return value;
+      });
+      res.json(JSON.parse(jsonData));
+      // next();
     } catch (error) {
       // TODO - handle error
       console.log(error);
@@ -55,11 +62,18 @@ class ElectionDB {
   //  */
   // async getBallots(electionId) {
   async getBallots(req, res, next) {
-    const query = this.Ballot.findOne({ election_id: electionId });
-
+    const query = Ballot.findOne({ election_id: electionId });
+res.json
     try {
+
       const res = await query.exec();
-      return res.json(data);
+
+      const jsonData = JSON.stringify(data, (key,value) => {
+        if (key === '_id' || key === "__v") {
+          return undefined;
+        } return value;
+      });
+      res.json(data);
     } catch (error) {
       // TODO - handle error
       console.log(error);
