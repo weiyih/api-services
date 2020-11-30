@@ -70,7 +70,7 @@ electionDB.election.insert({
     locked: 0, 
     progress: 0,
     disabled: 1,
-    channel_name: '',
+    channel_name: '9cd5f582-75e5-4bee-b451-e5417c18e761',
     contract_name: 'voting_contract',
     __v: 0
 })
@@ -87,7 +87,7 @@ electionDB.election.insert({
     locked: 1, // 0 - unlocked(editable), 1 - locked(not running/in progress/completed)
     progress: 0, // 0 - not running, 1 - in progress, 2 - completed
     disabled: 1, // 0 - deleted election, 1 - valid election
-    channel_name: '',
+    channel_name: 'test_election_2020',
     contract_name: 'voting_contract',
     __v: 0
 })
@@ -109,24 +109,20 @@ electionDB.candidates.insert({
             candidate_id: '007d60e9-8942-463a-9264-37bc9190ef04',
             candidate_name: 'Mary Jane'
         },
-        {
-            candidate_id: 'c3fc17a0-f203-4eee-bb4a-ed7089dc5ce8',
-            candidate_name: 'Harry Osborn'
-        }
     ]},
     {
         district_id: 2,
         candidates: [{
                 candidate_id: '7cdbe69c-5d3e-4a1c-a89e-e5d06b28c1b4',
-                candidate_name: 'Clark Kent'
+                candidate_name: 'Lex Luthor'
             },
             {
                 candidate_id: '37326dac-3dc3-4c66-9523-cb64bd1cc959',
-                candidate_name: 'Bruce Wayne'
+                candidate_name: 'Mr. Freeze'
             },
             {
                 candidate_id: '8ee1f294-f4a3-43c6-be75-0edc74d79952',
-                candidate_name: 'Harley Quinn'
+                candidate_name: 'Dr. Octavius'
             }
         ]
     }],
@@ -139,34 +135,30 @@ electionDB.candidates.insert({
         district_id: 1,
         candidates: [{
             candidate_id: '2d8248ab-a831-4b5c-a3b2-6c5ef317731a',
-            candidate_name: 'Gwen Stacy'
+            candidate_name: 'Tony Stark'
         },
         {
             candidate_id: '4610567e-8f6c-4c8a-acfd-5b92cfaf0766',
-            candidate_name: 'Peter Parker'
+            candidate_name: 'Steve Rogers'
         },
         {
             candidate_id: '007d60e9-8942-463a-9264-37bc9190ef04',
-            candidate_name: 'Mary Jane'
+            candidate_name: 'Bruce Banner'
         },
-        {
-            candidate_id: 'c3fc17a0-f203-4eee-bb4a-ed7089dc5ce8',
-            candidate_name: 'Harry Osborn'
-        }
     ]},
     {
         district_id: 2,
         candidates: [{
                 candidate_id: '7cdbe69c-5d3e-4a1c-a89e-e5d06b28c1b4',
-                candidate_name: 'Clark Kent'
+                candidate_name: 'Selina Kyle'
             },
             {
                 candidate_id: '37326dac-3dc3-4c66-9523-cb64bd1cc959',
-                candidate_name: 'Bruce Wayne'
+                candidate_name: 'Jean Grey'
             },
             {
                 candidate_id: '8ee1f294-f4a3-43c6-be75-0edc74d79952',
-                candidate_name: 'Harley Quinn'
+                candidate_name: 'Carol Danvers'
             }
         ]
     }],
