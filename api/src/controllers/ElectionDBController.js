@@ -32,7 +32,7 @@ class ElectionDB {
   async getAllElection(req, res, next) {
     // Query retrieves all elections that are not disabled (ie. deleted)
     // Strips away objectId(_id) and document version(__v)
-    const query = Election.find()
+    const query = Election.findOne()
       .where("disabled").equals(1) 
       .select("-_id -__v"); 
     try {

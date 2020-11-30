@@ -20,7 +20,7 @@ const ballotSchema = new mongoose.Schema({
     election_id: {
         type: String,
     },
-    district: [districtSchema],
+    districts: [districtSchema],
 });
 
 module.exports = ballotSchema;
