@@ -11,18 +11,16 @@ let Ballot;
 
 class ElectionDB {
   constructor() {
-
     const { ELECTION_DB } = process.env;
 
     try {
       const db = DBFactory.create(ELECTION_DB);
       // Buffer registering models
       db.conn.on("connected", () => {
-        console.log(`Registering ${ELECTION_DB} models`)
+        console.log(`Registering ${ELECTION_DB} models`);
         Election = db.conn.model("election", electionSchema, "election");
         Ballot = db.conn.model("ballot", ballotSchema, "candidates");
-      })
-
+      });
     } catch (error) {
       console.log(error);
     }
@@ -31,22 +29,34 @@ class ElectionDB {
   /**
    * Retrieve all valid elections
    */
-  async getElection(req, res, next) {
-    // Build query
-    
-    const query = Election.find().where("disabled").equals(1);
-    // .where('election_end_date').gt()
+  async getAllElection(req, res, next) {
+    // Query retrieves all elections that are not disabled (ie. deleted)
+    // Strips away objectId(_id) and document version(__v)
+    const query = Election.find()
+      .where("disabled").equals(1) 
+      .select("-_id -__v"); 
+    try {
+      const data = await query.exec();
+      res.json(data);
+      // next();
+    } catch (error) {
+      // TODO - handle error
+      console.log(error);
+      return res.status(500).send({ message: error.message });
+    }
+  }
 
+  async getElection(req, res, next) {
+    const electionId = req.params.id;
+    // Build query
+    const query = Election.findOne()
+      .where("election_id")
+      .equals(electionId)
+      .select("-_id -__v"); //Strips objectId(_id) and document version(__v)
     try {
       const data = await query.exec();
 
-      // Remove mongodb object_id(_id) and version(_v)
-      const jsonData = JSON.stringify(data, (key,value) => {
-        if (key === '_id' || key === "__v") {
-          return undefined;
-        } return value;
-      });
-      res.json(JSON.parse(jsonData));
+      res.json(data);
       // next();
     } catch (error) {
       // TODO - handle error
@@ -63,15 +73,15 @@ class ElectionDB {
   // async getBallots(electionId) {
   async getBallots(req, res, next) {
     const query = Ballot.findOne({ election_id: electionId });
-res.json
+    res.json;
     try {
-
       const res = await query.exec();
 
-      const jsonData = JSON.stringify(data, (key,value) => {
-        if (key === '_id' || key === "__v") {
+      const jsonData = JSON.stringify(data, (key, value) => {
+        if (key === "_id" || key === "__v") {
           return undefined;
-        } return value;
+        }
+        return value;
       });
       res.json(JSON.parse(jsonData));
     } catch (error) {
