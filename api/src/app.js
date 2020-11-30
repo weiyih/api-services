@@ -131,7 +131,10 @@ app.post("/v1/login", (req, res) => {
  * Response: Election JSON object
  */
 // app.get('/v1/election', authenticateJWT, (req, res) => {
-app.get("/v1/election", ElectionDB.getElection);
+
+app.get("/v1/election/:id", ElectionDB.getElection);
+
+app.get("/v1/election", ElectionDB.getAllElection);
 
 /**
  * GET REQUEST
