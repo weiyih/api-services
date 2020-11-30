@@ -40,10 +40,17 @@ voterDB.voter.insert({
     street_suffix: 'Rd',
     town: 'Oakville',
     zip_code: 'L6H2L1',
-    ward: '1',
-    vote_status: 'No',
-    vote_online: 'No',
-    __v: 0 
+    vote: [
+        {election_id: '9cd5f582-75e5-4bee-b451-e5417c18e761', district_id: 1},
+        {election_id: '7cdbe69c-5d3e-4a1c-a89e-e5d06b28c1b4', district_id: 2},
+    ],
+    vote_status: 0,
+    vote_online: 1,
+    verified: {
+        verify_code: '123456',
+        status: 1,
+    },
+    __v: 0
 })
 
 // Election DB
@@ -52,7 +59,7 @@ electionUUID = UUID()
 electionDB.election.createIndex({ election_id: 1 }, { unique: true })
 electionDB.election.insert({
     election_id: '9cd5f582-75e5-4bee-b451-e5417c18e761',
-    election_name: 'Test Election 2022',
+    election_name: 'Oakville Municipal Election 2022',
     election_start_date: '2021-03-01T00:00:00.000Z',
     election_end_date: '2022-01-01T00:00:00.000Z',
     advanced_polling: 1,
@@ -69,7 +76,7 @@ electionDB.election.insert({
 })
 electionDB.election.insert({
     election_id: 'c88aeee1-134b-403c-bc37-651a890548c0',
-    election_name: 'Test Voting 2020',
+    election_name: 'Test Election 2020',
     election_start_date: '2020-03-01T00:00:00.000Z',
     election_end_date: '2021-01-01T00:00:00.000Z',
     advanced_polling: 1,
@@ -77,7 +84,7 @@ electionDB.election.insert({
     advanced_end_date: '2020-12-31T24:00:00.000Z',
     created_at: '2020-01-01T00:00:00.000Z',
     updated_at: '2020-02-01T00:00:00.000Z',
-    locked: 0, // 0 - unlocked(editable), 1 - locked(not running/in progress/completed)
+    locked: 1, // 0 - unlocked(editable), 1 - locked(not running/in progress/completed)
     progress: 0, // 0 - not running, 1 - in progress, 2 - completed
     disabled: 1, // 0 - deleted election, 1 - valid election
     channel_name: '',
@@ -85,33 +92,83 @@ electionDB.election.insert({
     __v: 0
 })
 
-
-
-// Ballot
+// Insert ballot for Test Election
 electionDB.candidates.insert({
-    election_id: '9cd5f582-75e5-4bee-b451-e5417c18e761',
-    ward: "1",
-    candidate: [
-        {
+    election_id: 'c88aeee1-134b-403c-bc37-651a890548c0',
+    districts: [{
+        district_id: 1,
+        candidates: [{
             candidate_id: '2d8248ab-a831-4b5c-a3b2-6c5ef317731a',
-            candidate_name: { last_name: 'Hawes', first_name: 'Lena' }
+            candidate_name: 'Gwen Stacy'
         },
         {
             candidate_id: '4610567e-8f6c-4c8a-acfd-5b92cfaf0766',
-            candidate_name: { last_name: 'Bartlett', first_name: 'Stanley' }
-        },
-        {
-            candidate_id: '8ee1f294-f4a3-43c6-be75-0edc74d79952',
-            candidate_name: { last_name: 'Goodman', first_name: 'Faizah' }
+            candidate_name: 'Peter Parker'
         },
         {
             candidate_id: '007d60e9-8942-463a-9264-37bc9190ef04',
-            candidate_name: { last_name: 'Cisneros', first_name: 'Rianna' }
+            candidate_name: 'Mary Jane'
         },
         {
-            candidate_id: 'bacfbb4b-c5c8-4209-9528-0db0760b9cd7',
-            candidate_name: { last_name: 'Wilkinson', first_name: 'Ned' }
+            candidate_id: 'c3fc17a0-f203-4eee-bb4a-ed7089dc5ce8',
+            candidate_name: 'Harry Osborn'
         }
-    ],
-    __v: 0 
+    ]},
+    {
+        district_id: 2,
+        candidates: [{
+                candidate_id: '7cdbe69c-5d3e-4a1c-a89e-e5d06b28c1b4',
+                candidate_name: 'Clark Kent'
+            },
+            {
+                candidate_id: '37326dac-3dc3-4c66-9523-cb64bd1cc959',
+                candidate_name: 'Bruce Wayne'
+            },
+            {
+                candidate_id: '8ee1f294-f4a3-43c6-be75-0edc74d79952',
+                candidate_name: 'Harley Quinn'
+            }
+        ]
+    }],
+    __v: 0
+})
+// Insert ballot for Oakville Election
+electionDB.candidates.insert({
+    election_id: '9cd5f582-75e5-4bee-b451-e5417c18e761',
+    districts: [{
+        district_id: 1,
+        candidates: [{
+            candidate_id: '2d8248ab-a831-4b5c-a3b2-6c5ef317731a',
+            candidate_name: 'Gwen Stacy'
+        },
+        {
+            candidate_id: '4610567e-8f6c-4c8a-acfd-5b92cfaf0766',
+            candidate_name: 'Peter Parker'
+        },
+        {
+            candidate_id: '007d60e9-8942-463a-9264-37bc9190ef04',
+            candidate_name: 'Mary Jane'
+        },
+        {
+            candidate_id: 'c3fc17a0-f203-4eee-bb4a-ed7089dc5ce8',
+            candidate_name: 'Harry Osborn'
+        }
+    ]},
+    {
+        district_id: 2,
+        candidates: [{
+                candidate_id: '7cdbe69c-5d3e-4a1c-a89e-e5d06b28c1b4',
+                candidate_name: 'Clark Kent'
+            },
+            {
+                candidate_id: '37326dac-3dc3-4c66-9523-cb64bd1cc959',
+                candidate_name: 'Bruce Wayne'
+            },
+            {
+                candidate_id: '8ee1f294-f4a3-43c6-be75-0edc74d79952',
+                candidate_name: 'Harley Quinn'
+            }
+        ]
+    }],
+    __v: 0
 })
