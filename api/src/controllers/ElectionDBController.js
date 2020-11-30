@@ -65,6 +65,25 @@ class ElectionDB {
     }
   }
 
+  async getCandidates(req, res, next) {
+    const electionId = req.params.id;
+    // Build query
+    const query = Ballot.find()
+      .where("election_id")
+      .equals(electionId)
+      .select("-_id -__v"); //Strips objectId(_id) and document version(__v)
+    try {
+      const data = await query.exec();
+
+      res.json(data);
+      // next();
+    } catch (error) {
+      // TODO - handle error
+      console.log(error);
+      return res.status(500).send({ message: error.message });
+    }
+  }
+
   // /**
   //  * Retrieves ballots based on electionId
   //  * @param {*} electionId

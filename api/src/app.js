@@ -136,6 +136,8 @@ app.get("/v1/election/:id", ElectionDB.getElection);
 
 app.get("/v1/election", ElectionDB.getAllElection);
 
+app.get("/v1/candidates/:id", ElectionDB.getCandidates)
+
 /**
  * GET REQUEST
  * Response: Ballot JSON object
