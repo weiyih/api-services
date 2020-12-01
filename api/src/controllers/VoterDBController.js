@@ -1,19 +1,20 @@
-const mongoose = require("mongoose");
 const voterSchema = require("../schemas/Voter");
+const DBFactory = require('./DBFactory');
 require("dotenv").config();
 
 let Voter;
 
 class VoterDB {
+
+
   constructor() {
     const { VOTER_DB } = process.env;
-
     try {
       const db = DBFactory.create(VOTER_DB);
       // Buffer registering models
       db.conn.on("connected", () => {
         console.log(`Registering ${VOTER_DB} models`);
-        Voter = this.conn.model("voter", voterSchema, "voter");
+        Voter = db.conn.model("voter", voterSchema, "voter");
       });
     } catch (error) {
       console.log(error);
@@ -64,33 +65,33 @@ class VoterDB {
       return res.status(500).send({ message: error.message });
     }
 
-    const query = Voter.findOneAndUpdate(
-      { voter_id: voterId },
-      { vote_status: status },
-      { new: true }
-    );
-    const res = await query.exec();
+    // const query = Voter.findOneAndUpdate(
+    //   { voter_id: voterId },
+    //   { vote_status: status },
+    //   { new: true }
+    // );
+    // const res = await query.exec();
 
-    if (!res) {
-      return null;
-    }
-    return res;
+    // if (!res) {
+    //   return null;
+    // }
+    // return res;
   }
 
   // Updates Voter document to reflect the User intention to vote online when registering
-  async updateUserOnlineVote(voterId) {
-    const query = Voter.findOneAndUpdate(
-      { voter_id: voterId },
-      { vote_online: "Yes" },
-      { new: true }
-    );
-    const res = await query.exec();
+  // async updateUserOnlineVote(voterId) {
+  //   const query = Voter.findOneAndUpdate(
+  //     { voter_id: voterId },
+  //     { vote_online: "Yes" },
+  //     { new: true }
+  //   );
+  //   const res = await query.exec();
 
-    if (!res) {
-      return null;
-    }
-    return res;
-  }
+  //   if (!res) {
+  //     return null;
+  //   }
+  //   return res;
+  // }
 }
 
 module.exports = new VoterDB();
