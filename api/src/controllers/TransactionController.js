@@ -1,8 +1,7 @@
 // https://hyperledger.github.io/fabric-sdk-node/master/module-fabric-network.html
 
-const { FileSystemWallet, Gateway, TimeoutError, X509WalletMixin } = require('fabric-network');
-const fs = require('fs');
-const path = require('path');
+const { Wallets, Gateway, TimeoutError, X509WalletMixin } = require('fabric-network');
+const NetworkGatewayFactory = require('./NetworkGatewayFactory')
 
 // Provides persisten reusable connection to peer within netowrk
 // Access to any (Network) channel peer is member of, which provides
@@ -12,71 +11,29 @@ const path = require('path');
 let key = 0;
 
 class TransactionController {
-    // TODO - Replace key with better index
-
 
     constructor() {
-        this.gateway = new Gateway(); // Gateway
-        this.network = null; // Network
-        this.wallet = null; // Wallet
-        this.contract = null; // Contract
-
-    }
-
-    // Connect to blockchain network
-    async setup() {
         try {
-            // Load App identity
-            const walletPath = path.resolve(__dirname, '../config/wallet');
-            this.wallet = new FileSystemWallet(walletPath);
-
-            const identity = await this.wallet.exists('voting-api-client');
-            // Create identity if it doesn't exist
-            // TODO - Migrate to registration service for security
-            if (!identity) {
-                const cert = fs.readFileSync(path.resolve(__dirname, '../src/config/wallet/voting-api-client/certificate.pem'));
-                const privateKey = fs.readFileSync(path.resolve(__dirname, '../src/config/wallet/voting-api-client/private_key.pem'));
-                let appIdentity = X509WalletMixin.createIdentity('voting-sheridan', cert, privateKey);
-                await this.wallet.import('voting-api-client', appIdentity);
-            } else {
-                console.log('App identity exists');
-            }
-
-            // Common connection profile
-            const ccpPath = path.resolve(__dirname, '../config/org_profile.json');
-            const ccp = fs.readFileSync(ccpPath, 'utf8'); // Common Connection Profile
-            const ccpJSON = JSON.parse(ccp);
-
-            let wallet = this.wallet
-            const gatewayOptions = {
-                identity: 'voting-api-client',
-                wallet,
-                discovery: { enabled: true, asLocalhost: false },
-            }
-            // Connect to network
-            await this.gateway.connect(ccpJSON, gatewayOptions);
-            // Get the network (channel) our contract is deployed to.
-            this.network = await this.gateway.getNetwork('voting-channel');
-            // Get the contract from the network.
-            this.contract = this.network.getContract('vote-contract');
-
-            return;
+            this.gateway = NetworkGatewayFactory.create();
         } catch (error) {
-            if (error instanceof TimeoutError) {
-                // TODO: Recheck query
-            } else {
-                console.log(error);
-            }
+          console.log(error);
         }
     }
 
     // Submit vote as transaction
-    // userVote : Vote object
-    async submitTransaction(ballot) {
+    async submitTransaction(res, req, next) {
+
+
+        network = await this.gateway.getNetwork('voting-channel');
+        contract = this.network.getContract('vote-contract');
+
         let voteKey = 'VOTE' + key;
         key++;
         try {
-            let submitResults = await this.contract.submitTransaction('createVote', voteKey, ballot.election_id, ballot.ward, ballot.selected_candidate, ballot.timestamp);
+            let submitResults = 
+            
+            
+            await this.contract.submitTransaction('createVote', voteKey, ballot.election_id, ballot.ward, ballot.selected_candidate, ballot.timestamp);
             // TODO - 
             if (submitResults) {
                 console.log(submitResults);

@@ -1,13 +1,11 @@
 const https = require('https');
 const http = require('http');
 const app = require('./app');
-const ElectionDB = require('./controllers/ElectionDBController');
-const Transaction = require('./controllers/TransactionController');
 const fs = require('fs');
+const Transaction = require('./controllers/TransactionController');
 const path = require('path');
 
-
-
+// Initialize the connections to DB and Blockchain
 const PORT = 8080;
 
 // Using self-signed cert for SSL due to lack of domain name
