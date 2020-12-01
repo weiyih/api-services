@@ -73,10 +73,11 @@ electionDB.election.insert({
     locked: 0, 
     progress: 0,
     disabled: 1,
-    channel_name: '9cd5f582-75e5-4bee-b451-e5417c18e761',
+    channel_name: 'oakville-municipal-election-2022',
     contract_name: 'voting_contract',
     __v: 0
 })
+
 electionDB.election.insert({
     election_id: 'c88aeee1-134b-403c-bc37-651a890548c0',
     election_name: 'Test Election 2020',
@@ -90,7 +91,7 @@ electionDB.election.insert({
     locked: 1, // 0 - unlocked(editable), 1 - locked(not running/in progress/completed)
     progress: 0, // 0 - not running, 1 - in progress, 2 - completed
     disabled: 1, // 0 - deleted election, 1 - valid election
-    channel_name: 'test_election_2020',
+    channel_name: 'test-election-2020',
     contract_name: 'voting_contract',
     __v: 0
 })
