@@ -105,7 +105,6 @@ app.post("/v1/signup", (req, res) => {
 app.post("/v1/login", (req, res) => {
   // TODO Login with user credentials
   // const user = req.body;
-
   let response = {
     status: "success",
     message: "logged in",
@@ -138,6 +137,10 @@ app.get("/v1/election", ElectionDB.getAllElection);
 
 app.get("/v1/candidates/:id", ElectionDB.getCandidates);
 
+app.get('/v1/voters', VoterDB.getVoter);
+// app.get('/v1/voters', VoterDB.getVoterStream);
+
+
 /**
  * GET REQUEST
  * Response: Ballot JSON object
@@ -148,10 +151,19 @@ app.get("/v1/ballot", (req, res) => {
   res.json(data);
 });
 
+
+
 /**
  * POST REQUEST
  * Submit ballot
  */
+// app.post("/v1/submit", 
+//   authenticateJWT,
+//   checkVoteStatus,
+//   validateBallot,
+//   submitTransaction
+// );
+
 app.post("/v1/submit", authenticateJWT, function (req, res) {
   try {
     // TODO - DIGITAL SIGNATURE VERIFICATION
