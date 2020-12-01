@@ -34,8 +34,8 @@ class NetworkGateway {
             const identity = await wallet.get('node-api-mobile');
 
             if (!identity) {
-                const cert = fs.readFileSync(path.resolve(__dirname, '../config/wallet/node-api-mobile/certificate.pem'), 'utf8');
-                const privateKey = fs.readFileSync(path.resolve(__dirname, '../config/wallet/node-api-mobile/private_key.pem'), 'utf8');
+                const cert = fs.readFileSync(path.resolve(__dirname, '../src/config/wallet/node-api-mobile/certificate.pem'), 'utf8');
+                const privateKey = fs.readFileSync(path.resolve(__dirname, '../src/config/wallet/node-api-mobile/private_key.pem'), 'utf8');
                 // const identity = X509WalletMixin.createIdentity('node-api-mobile', cert, privateKey);
                 const identity = {
                     credentials: {
