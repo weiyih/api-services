@@ -5,8 +5,6 @@ require("dotenv").config();
 let Voter;
 
 class VoterDB {
-
-
   constructor() {
     const { VOTER_DB } = process.env;
     try {

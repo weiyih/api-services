@@ -16,7 +16,7 @@ class UserDB {
       const db = DBFactory.create(USER_DB);
       // Buffer registering models
       db.conn.on("connected", () => {
-        console.log(`Registering ${VOTER_DB} models`);
+        console.log(`Registering ${USER_DB} models`);
         User = db.conn.model("user", userSchema, "user");
       });
     } catch (error) {
