@@ -21,7 +21,7 @@ const voteElectionSchema = new Schema({
     }
 })
 
-const voteStatusSchema = new Schema({
+const electionVoteSchema = new Schema({
     election_id: {
         type: String,
         index: true,
