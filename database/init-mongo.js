@@ -44,7 +44,10 @@ voterDB.voter.insert({
         {election_id: '9cd5f582-75e5-4bee-b451-e5417c18e761', district_id: 1},
         {election_id: '7cdbe69c-5d3e-4a1c-a89e-e5d06b28c1b4', district_id: 2},
     ],
-    vote_status: 0,
+    vote_status: [
+        {election_id: '9cd5f582-75e5-4bee-b451-e5417c18e761', status: 0},
+        {election_id: '7cdbe69c-5d3e-4a1c-a89e-e5d06b28c1b4', status: 0},
+    ],
     vote_online: 1,
     verified: {
         verify_code: '123456',
