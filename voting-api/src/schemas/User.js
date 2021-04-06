@@ -27,6 +27,9 @@ const userSchema = new Schema({
     email_status: {
         type: String
     },
+    password: {
+        type: String,
+    },
     date_of_birth: {
         type: Date
     },

@@ -63,7 +63,10 @@ class ElectionDB {
     }
   }
 
+
   async getCandidates(req, res, next) {
+    //TODO - Load user
+
     const electionId = req.params.id;
     // Build query
     const query = Ballot.findOne()

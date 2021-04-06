@@ -1,3 +1,5 @@
+const jwt = require("jsonwebtoken")
+
 /*
 * JWT Authentication Middleware to access routes
 * JWT Token is generated
@@ -10,20 +12,25 @@ const JWT_PRIVATE_KEY = fs.readFileSync(
     path.resolve(__dirname, JWT_PRIVATE_KEYFILE)
 );
 
+const JWT_ALGORITHM = "ES256"
+
 // TODO - REMOVE -> App will be using public key to encrypt
 const JWT_PUBLIC_KEY = fs.readFileSync(
     path.resolve(__dirname, "./config/ec_public.pem")
 );
 
-exports.authenticate = function(req, res, next) {
+/*
+* JWT Authentication Middleware to access routes
+*/
+exports.authenticate = function (req, res, next) {
     try {
         const authHeader = req.headers.authorization;
 
-        // Authorization header missing
+        // Check if authorization header missing
         if (authHeader) {
             const authToken = authHeader.split(" ")[1];
-            // TODO replace with private key
             const verified = jwt.verify(authToken, JWT_PUBLIC_KEY);
+            // stores the decoded jwt token in verified
             if (verified) {
                 req.verified = verified;
                 next();
@@ -39,26 +46,24 @@ exports.authenticate = function(req, res, next) {
         //   return res.status(401).end();
     }
 };
-}
 
 /*
-* Generate JWT Token 
+* Generates a JWT token that contains the user_email (username)
+* JWT_EXPIRY_SECOND is 30mins
+* @param(user) - User object from UserDB
 */
-jwt.sign(
-    { user_id: doc.email },
-    JWT_PRIVATE_KEY,
-    { expiresIn: JWT_EXPIRY_SECOND, algorithm: "ES256" },
-    function (err, token) {
-        if (err) {
-            console.log(err);
-            throw Error("error token")
+exports.generateJWT = function (user) {
+    jwt.sign(
+        { user_id: user.email },
+        { expiresIn: JWT_EXPIRY_SECOND * 1000, algorithm: JWT_ALGORITHM },
+        function (error, token) {
+            if (error) {
+                console.log(error);
+                throw Error(`Error generating JWT token - ${error}`);
+            }
+            else {
+                return token
+            }
         }
-        let response = {
-            status: "success",
-            message: "logged in",
-        };
-        // Set cookie as token string and send
-        res.cookie("token", token, { maxAge: JWT_EXPIRY_SECOND });
-        res.send(response);
-    }
-);
+    )
+}

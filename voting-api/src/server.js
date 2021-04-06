@@ -2,7 +2,7 @@ const https = require('https');
 const http = require('http');
 const app = require('./app');
 const fs = require('fs');
-const Transaction = require('./controllers/TransactionController');
+// const Transaction = require('./controllers/TransactionController');
 const path = require('path');
 
 // Initialize the connections to DB and Blockchain

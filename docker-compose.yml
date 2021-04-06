@@ -1,22 +1,13 @@
 version: '3.7'
 
-secrets:
-  voting_api_ec_public:
-    file: ./ec_public.pem
-    name: jwt_public
-  voting_api_ec_private:
-    file: ./ec_private.pem
-    name: jwt_private
-
-
 services:
   db:
     container_name: mongodb
     image: mongo:latest
     restart: always    
     environment:
-      # Add docker secrets for admin/password
       MONGO_INITDB_ROOT_USERNAME: vsadmin
+      # Add docker secrets for password
       MONGO_INITDB_ROOT_PASSWORD: votingsystem
       MONGO_INITDB_DATABASE: admin
     ports:
@@ -27,7 +18,10 @@ services:
 
   # Public access
   voting-api:
-    container_name: node-voting
+    container_name: voting-api
+    environment:
+      JWT_PUBLIC_KEY: /run/secrets/voting_api_ec_public
+      JWT_PRIVATE_KEY: /run/secrets/voting_api_ec_private
     build: 
       context: ./api
       dockerfile: api.Dockerfile
@@ -50,6 +44,12 @@ services:
   #     - 8081:8081  
   #   links:
   #     - db
+
+secrets:
+  voting_api_ec_public:
+    file: ./ec_public.pem
+  voting_api_ec_private:
+    file: ./ec_private.pem
 
 volumes:
   mongo-volume:

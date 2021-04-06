@@ -1,6 +1,5 @@
 const { Wallets, Gateway, Identity } = require('fabric-network');
 const fs = require('fs');
-const { connect } = require('http2');
 const path = require('path');
 
 

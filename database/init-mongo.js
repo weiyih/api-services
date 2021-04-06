@@ -18,6 +18,8 @@ userDB.user.insert({
     },
     email: 'weiyih@sheridancollege.ca',
     email_status: 'Verified',
+    password: 'password',
+    biometricPassword: 'biometric',
     date_of_birth: '1991-01-31',
     voter_id: '3b241101-e2bb-4255-8caf-4136c566a962',
     date_create: '2020-01-01T00:00:00Z',
