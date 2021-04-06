@@ -1,5 +1,14 @@
 version: '3.7'
 
+secrets:
+  voting_api_ec_public:
+    file: ./ec_public.pem
+    name: jwt_public
+  voting_api_ec_private:
+    file: ./ec_private.pem
+    name: jwt_private
+
+
 services:
   db:
     container_name: mongodb
