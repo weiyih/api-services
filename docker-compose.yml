@@ -7,7 +7,6 @@ services:
     restart: always    
     environment:
       MONGO_INITDB_ROOT_USERNAME: vsadmin
-      # Add docker secrets for password
       MONGO_INITDB_ROOT_PASSWORD: votingsystem
       MONGO_INITDB_DATABASE: admin
     ports:
@@ -19,9 +18,6 @@ services:
   # Public access
   voting-api:
     container_name: voting-api
-    environment:
-      JWT_PUBLIC_KEY: /run/secrets/voting_api_ec_public
-      JWT_PRIVATE_KEY: /run/secrets/voting_api_ec_private
     build: 
       context: ./api
       dockerfile: api.Dockerfile
@@ -30,26 +26,6 @@ services:
       - 80:8080
     links:
       - db
-
-  # DEV TESTING purposes only - REMOVE
-  # db-admin-dev:
-  #   container_name: dev-mongo-express
-  #   image: mongo-express:latest
-  #   environment:
-  #     ME_CONFIG_MONGODB_SERVER: voting-mongodb
-  #     ME_CONFIG_MONGODB_AUTH_DATABASE: admin
-  #     ME_CONFIG_MONGODB_ADMINUSERNAME: vsadmin
-  #     ME_CONFIG_MONGODB_ADMINPASSWORD: votingsystem
-  #   ports:
-  #     - 8081:8081  
-  #   links:
-  #     - db
-
-secrets:
-  voting_api_ec_public:
-    file: ./ec_public.pem
-  voting_api_ec_private:
-    file: ./ec_private.pem
 
 volumes:
   mongo-volume:
