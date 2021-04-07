@@ -6,14 +6,12 @@ const bodyParser = require("body-parser"); // https://github.com/expressjs/body-
 const cookieParser = require("cookie-parser");
 const cors = require("cors"); // https://github.com/expressjs/cors CORS middleware
 const morgan = require("morgan"); // https://github.com/expressjs/morgan HTTP request logger middleware
-const jwt = require("jsonwebtoken");
-const fs = require("fs");
-const path = require("path");
 const logger = require("morgan");
 const ElectionDB = require("./controllers/ElectionDBController");
 const UserDB = require("./controllers/UserDBController");
 const VoterDB = require("./controllers/VoterDBController");
-const Transaction = require("./controllers/TransactionController");
+// const Transaction = require("./controllers/TransactionController");
+const {authenticateJWT} = require("./controllers/AuthJWT")
 
 require("dotenv").config();
 
@@ -106,7 +104,7 @@ app.get("/v1/ballot/:id", (req, authenticateJWT, res) => {
 // );
 
 
-app.post("/v1/submit", authenticateJWT, function (req, res) {
+app.post("/v1/submit", function (req, res) {
     try {
         const ballot = req.body;
 
