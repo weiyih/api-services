@@ -11,16 +11,13 @@ userDB.user.createIndex({ userId: 1 })
 userDB.user.createIndex({ email: 1 })
 userDB.user.insert({
     user_id: '222078a2-054e-4cc0-b8ae-c0693eadbafb',
-    full_name: {
-        first_name: 'Kevin',
-        middle_name: '',
-        last_name: 'Wei'
-    },
+    first_name: 'Kevin',
+    middle_name: '',
+    last_name: 'Wei',
     email: 'weiyih@sheridancollege.ca',
     email_status: 'Verified',
     password: 'password',
     biometricPassword: 'biometric',
-    date_of_birth: '1991-01-31',
     voter_id: '3b241101-e2bb-4255-8caf-4136c566a962',
     date_create: '2020-01-01T00:00:00Z',
     device_id: '',
@@ -37,6 +34,7 @@ voterDB.voter.insert({
     middle_name: '',
     last_name: 'Wei',
     date_birth: '1991-01-31',
+    unit_number: '',
     street_number: '1430',
     street_name: 'Trafalgar',
     street_suffix: 'Rd',
@@ -45,10 +43,12 @@ voterDB.voter.insert({
     vote: [
         {election_id: '9cd5f582-75e5-4bee-b451-e5417c18e761', district_id: 1},
         {election_id: '7cdbe69c-5d3e-4a1c-a89e-e5d06b28c1b4', district_id: 2},
+        {election_id: 'c88aeee1-134b-403c-bc37-651a890548c0', district_id: 1},
     ],
     vote_status: [
         {election_id: '9cd5f582-75e5-4bee-b451-e5417c18e761', status: 0},
         {election_id: '7cdbe69c-5d3e-4a1c-a89e-e5d06b28c1b4', status: 0},
+        {election_id: 'c88aeee1-134b-403c-bc37-651a890548c0', status: 0},
     ],
     vote_online: 1,
     verified: {
@@ -103,6 +103,25 @@ electionDB.election.insert({
 electionDB.election.insert({
     election_id: 'c88aeee1-134b-403c-bc37-651a890548c0',
     election_name: 'No Advanced Polling Election 2020',
+    election_description: 'No Advanced Polling for Blockchain Voting Capstone',  
+    election_start_date: '2020-03-01T00:00:00.000Z',
+    election_end_date: '2021-01-01T00:00:00.000Z',
+    advanced_polling: false,
+    advanced_start_date: '',
+    advanced_end_date: '',
+    created_at: '2020-01-01T00:00:00.000Z',
+    updated_at: '2020-02-01T00:00:00.000Z',
+    locked: 1, // 0 - unlocked(editable), 1 - locked(not running/in progress/completed)
+    progress: 0, // 0 - not running, 1 - in progress, 2 - completed
+    disabled: 1, // 0 - deleted election, 1 - valid election
+    channel_name: 'test-election-2020',
+    contract_name: 'voting_contract',
+    __v: 0
+})
+
+electionDB.election.insert({
+    election_id: 'c88aeee2-134b-403c-bc37-651a890548c1',
+    election_name: 'User Disabled Election 2020',
     election_description: 'No Advanced Polling for Blockchain Voting Capstone',  
     election_start_date: '2020-03-01T00:00:00.000Z',
     election_end_date: '2021-01-01T00:00:00.000Z',
