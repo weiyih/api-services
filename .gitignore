@@ -150,4 +150,4 @@ temp/
 # End of https://www.gitignore.io/api/node,macos,visualstudiocode
 
 .env
-api/src/test.js
+secret.yaml
