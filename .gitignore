@@ -96,7 +96,8 @@ typings/
 .yarn-integrity
 
 # dotenv environment variables file
-.env
+# Security FLAW - should not include gitignore
+# .env
 .env.test
 
 # parcel-bundler cache (https://parceljs.org/)
@@ -149,5 +150,3 @@ temp/
 
 # End of https://www.gitignore.io/api/node,macos,visualstudiocode
 
-.env
-api/src/test.js
