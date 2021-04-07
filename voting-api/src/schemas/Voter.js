@@ -57,6 +57,9 @@ const voterSchema = new Schema({
         type: Date,
         // required: true,
     },
+    unit_number: {
+        type:String
+    },
     street_number: {
         type: String,
     },

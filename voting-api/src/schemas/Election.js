@@ -9,8 +9,12 @@ const electionSchema = new Schema({
     },
     election_name: {
         type: String,
-        // required: true,
+        required: true,
     },
+    election_description: {
+        type: String,
+    },
+
     election_start_date: {
         type: Date
     },
@@ -18,7 +22,7 @@ const electionSchema = new Schema({
         type: Date
     },
     advanced_polling: {
-        type: Number
+        type: Boolean
     },
     advanced_start_date: {
         type: Date

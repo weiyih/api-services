@@ -65,9 +65,10 @@ electionDB.election.createIndex({ election_id: 1 }, { unique: true })
 electionDB.election.insert({
     election_id: '9cd5f582-75e5-4bee-b451-e5417c18e761',
     election_name: 'Oakville Municipal Election 2022',
+    election_description: 'The Town of Oakville Municipal Mayoral Election for 2022.',
     election_start_date: '2021-03-01T00:00:00.000Z',
     election_end_date: '2022-01-01T00:00:00.000Z',
-    advanced_polling: 1,
+    advanced_polling: true,
     advanced_start_date: '2020-01-01T00:00:00.000Z',
     advanced_end_date: '2020-12-31T24:00:00.000Z',
     created_at: '2020-01-01T00:00:00.000Z',
@@ -81,11 +82,12 @@ electionDB.election.insert({
 })
 
 electionDB.election.insert({
-    election_id: 'c88aeee1-134b-403c-bc37-651a890548c0',
+    election_id: '63ba80e0-cae8-44a6-8a78-7ebe898e3351',
     election_name: 'Test Election 2020',
+    election_description: 'The Test Election for Blockchain Voting Capstone',  
     election_start_date: '2020-03-01T00:00:00.000Z',
     election_end_date: '2021-01-01T00:00:00.000Z',
-    advanced_polling: 1,
+    advanced_polling: true,
     advanced_start_date: '2020-01-01T00:00:00.000Z',
     advanced_end_date: '2020-12-31T24:00:00.000Z',
     created_at: '2020-01-01T00:00:00.000Z',
@@ -97,6 +99,26 @@ electionDB.election.insert({
     contract_name: 'voting_contract',
     __v: 0
 })
+
+electionDB.election.insert({
+    election_id: 'c88aeee1-134b-403c-bc37-651a890548c0',
+    election_name: 'No Advanced Polling Election 2020',
+    election_description: 'No Advanced Polling for Blockchain Voting Capstone',  
+    election_start_date: '2020-03-01T00:00:00.000Z',
+    election_end_date: '2021-01-01T00:00:00.000Z',
+    advanced_polling: false,
+    advanced_start_date: '',
+    advanced_end_date: '',
+    created_at: '2020-01-01T00:00:00.000Z',
+    updated_at: '2020-02-01T00:00:00.000Z',
+    locked: 1, // 0 - unlocked(editable), 1 - locked(not running/in progress/completed)
+    progress: 0, // 0 - not running, 1 - in progress, 2 - completed
+    disabled: 1, // 0 - deleted election, 1 - valid election
+    channel_name: 'test-election-2020',
+    contract_name: 'voting_contract',
+    __v: 0
+})
+
 
 // Insert ballot for Test Election
 electionDB.candidates.insert({

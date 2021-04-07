@@ -6,19 +6,17 @@ const userSchema = new Schema({
         type: String,
         index: true,
     },
-    full_name: {
-        first_name: {
-            type: String,
-            // required: true,
-        },
-        middle_name: {
-            type: String,
-            // required: false,
-        },
-        last_name: {
-            type: String,
-            // required: true,
-        },
+    first_name: {
+        type: String,
+        // required: true,
+    },
+    middle_name: {
+        type: String,
+        // required: false,
+    },
+    last_name: {
+        type: String,
+        // required: true,
     },
     email: {
         type: String,
@@ -30,15 +28,12 @@ const userSchema = new Schema({
     password: {
         type: String,
     },
-    date_of_birth: {
-        type: Date
-    },
     voter_id: {
         type: String
     },
     date_create: {
         type: String
-    }, 
+    },
     device_id: {
         type: String
     },
