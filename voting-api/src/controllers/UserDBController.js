@@ -1,10 +1,10 @@
 const DBFactory = require("./DBFactory");
 const userSchema = require("../schemas/User");
 const { v4: uuidv4 } = require("uuid");
-const jwt = require("jsonwebtoken")
+const authJWT = require("./AuthJWT")
 require("dotenv").config();
 
-
+const { JWT_EXPIRY_SECOND } = process.env
 
 /**
  * Mongoose Schema
@@ -40,34 +40,22 @@ class UserDB {
                 .equals(user.username)
                 .select("-_id -__v"); //Strips objectId(_id) and document version(__v)
 
-
-
             const doc = await query.exec();
-            console.log(doc);
-
             // TODO - Password hash comparison
             if (doc.email == user.username && doc.password == user.password) {
                 // TODO - Compare deviceIdHash
                 // if (doc.deviceId == user.deviceId ) {
                 // Generate JWT based on email
-                jwt.sign(
-                    { user_id: doc.email },
-                    JWT_PRIVATE_KEY,
-                    { expiresIn: JWT_EXPIRY_SECOND, algorithm: "ES256" },
-                    function (err, token) {
-                        if (err) {
-                            console.log(err);
-                            throw Error("error token")
-                        }
-                        let response = {
-                            status: "success",
-                            message: "logged in",
-                        };
-                        // Set cookie as token string and send
-                        res.cookie("token", token, { maxAge: JWT_EXPIRY_SECOND });
-                        res.send(response);
+                const token = await authJWT.generateJWT(doc)
+                if (token) {
+                    let response = {
+                        status: "success",
+                        message: "logged in",
                     }
-                );
+                    // Set cookie as token string and send
+                    res.cookie("token", token, { maxAge: parseInt(JWT_EXPIRY_SECOND) });
+                    res.send(response);
+                }
             } else {
                 throw Error("invalid username/password");
             }
