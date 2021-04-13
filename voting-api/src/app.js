@@ -12,8 +12,8 @@ const UserDB = require("./controllers/UserDBController");
 const VoterDB = require("./controllers/VoterDBController");
 // const Transaction = require("./controllers/TransactionController");
 const { authenticate } = require("./services/auth")
-const { loadData } = require("./controllers/user")
-const { getBallot } = require("./controllers/ballot")
+const { loadData, login } = require("./api/user")
+const { getBallot } = require("./api/ballot")
 
 require("dotenv").config();
 
@@ -62,7 +62,7 @@ app.post("/v1/signup", (req, res) => {
 
 // Login Controller
 // JWT_EXPIRY_SECOND = 10 minutes
-app.post("/v1/login", UserDB.login);
+app.post("/v1/login", login);
 
 
 /**

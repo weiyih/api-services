@@ -1,4 +1,4 @@
-const ElectionDB = require("./ElectionDBController");
+const ElectionDB = require("../controllers/ElectionDBController");
 
 async function checkVoteStatus(req, res, next) {
 

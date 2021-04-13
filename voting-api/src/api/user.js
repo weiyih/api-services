@@ -1,5 +1,5 @@
-const UserDB = require("./UserDBController");
-const VoterDB = require("./VoterDBController");
+const UserDB = require("../controllers/UserDBController");
+const VoterDB = require("../controllers/VoterDBController");
 
 async function loadData(req, res, next) {
     const verified = req.verified
