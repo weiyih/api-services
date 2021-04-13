@@ -43,6 +43,9 @@ const userSchema = new Schema({
     },
     driver_license: {
         type: String
+    },
+    verified_status: {
+        type: Boolean
     }
 })
 

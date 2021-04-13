@@ -22,6 +22,7 @@ userDB.user.insert({
     date_create: '2020-01-01T00:00:00Z',
     device_id: '',
     driver_license: 'W2247-79009-10131',
+    verified_status: false,
     __v: 0 
     // verified
 })
