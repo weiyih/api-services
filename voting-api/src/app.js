@@ -11,7 +11,9 @@ const ElectionDB = require("./controllers/ElectionDBController");
 const UserDB = require("./controllers/UserDBController");
 const VoterDB = require("./controllers/VoterDBController");
 // const Transaction = require("./controllers/TransactionController");
-const {authenticateJWT} = require("./services/auth")
+const { authenticate } = require("./services/auth")
+const { loadData } = require("./controllers/user")
+const { getBallot } = require("./controllers/ballot")
 
 require("dotenv").config();
 
@@ -67,27 +69,19 @@ app.post("/v1/login", UserDB.login);
  * Returns all election objects
  * Response: Election JSON object
  */
-app.post("/v1/election", 
-    authenticateJWT,
-    ElectionDB.getAllElection);
+app.post("/v1/election",
+    // authenticate,
+    ElectionDB.getAllElection
+);
 
 /**
  * POST REQUEST
  * Response: Ballot JSON object
  */
-// app.get('/v1/ballot', authenticateJWT, (req, res) => {
-
-// app.post("/v1/ballot/:id", (req, authenticateJWT, res) => {
-//     // const data = ElectionDB.ballotData;
-//     const election = req.body
-//     const data = ElectionDB.getBallots(electionId)
-//     res.json(data);
-// });
-
-app.post("/v1/ballot/:id",
-    authenticateJWT,
-    ElectionDB.getBallot()
-    
+app.post("/v1/ballot",
+    // authenticate,
+    loadData,
+    getBallot
 )
 
 /**
@@ -185,63 +179,5 @@ app.post("/v1/submit", function (req, res) {
 //   res.status(403).end()
 //   next();
 // });
-
-// TODO - Refactor to a seperate file
-// Check if ballot has incorrect data
-function validateBallot(ballot) {
-    // Invalid election id
-    if (ballot.election_id !== ElectionDB.electionData.election_id) {
-        return false;
-    }
-
-    // TODO - Ward/District Verification
-
-    // Timestamp and election dates
-    const currentTime = Date.now();
-    const ballotTime = Number(ballot.timestamp);
-    // TODO - REDUCE TIME
-    const SUBMISSION_LIMIT = 6000000; // 10 minutes
-
-    // Prevent ballot from being submitted if submission timestamp is >= SUBMISSION_LIMIT
-    if (currentTime - ballotTime >= SUBMISSION_LIMIT) {
-        return false;
-    }
-
-    // Ensure Election allows for electronic voting
-    // Somewhat redundant but may be required in the future?
-    if (ElectionDB.electionData.advanced_polling) {
-        // Ensure voting period is within the advanced poll and election dates
-        const advStartDate = Date.parse(
-            ElectionDB.electionData.advanced_start_date
-        );
-        const advEndDate = Date.parse(ElectionDB.electionData.advanced_end_date);
-
-        const electionStartDate = Date.parse(
-            ElectionDB.electionData.election_start_date
-        );
-        const electionEndDate = Date.parse(
-            ElectionDB.electionData.election_end_date
-        );
-
-        if (currentTime < advStartDate || currentTime >= advEndDate) {
-            return false;
-        }
-        if (currentTime < electionStartDate || currentTime > electionEndDate) {
-            return false;
-        }
-
-        // Ensure candidate selected is part of the list of eligible candidates
-        const candidates = ElectionDB.ballotData.candidate;
-
-        let candidateList = [];
-        for (const [key, candidate] of Object.entries(candidates)) {
-            candidateList.push(candidate.candidate_id);
-        }
-        if (!candidateList.includes(ballot.selected_candidate)) {
-            return false;
-        }
-        return true;
-    }
-}
 
 module.exports = app;
