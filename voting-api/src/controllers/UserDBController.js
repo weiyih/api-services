@@ -1,6 +1,6 @@
 const DBFactory = require("./DBFactory");
 const userSchema = require("../models/User");
-const appUserSchema = require("../models/AppUser")
+const AppUser = require("../models/AppUser")
 const { v4: uuidv4 } = require("uuid");
 const authJWT = require("../services/auth")
 require("dotenv").config();
@@ -28,62 +28,15 @@ class UserDB {
         }
     }
 
-    // TODO - Move login logic into a separate function. Should not be in the data access layer
-
-    async login(req, res) {
-        try {
-            const login = req.body;
-
-            if (login == null) {
-                throw Error("invalid username/password");
-            }
-
-            const user = await this.getUserEmail(login)
-
-
-
-            // TODO - Password hash comparison
-            if (doc.email == user.username && doc.password == user.password) {
-                // TODO - Compare deviceIdHash
-                // if (doc.deviceId == user.deviceId ) {
-                // Generate JWT based on email
-
-                const authToken = await authJWT.generateJWT(doc)
-
-                const appUser = new AppUser({
-                    username: user.email,
-                    token: authToken,
-                    verified: user.verified
-                })
-
-                if (authToken) {
-                    // Set cookie as token string and send
-                    res.cookie("token", token, { maxAge: parseInt(JWT_EXPIRY_SECOND) });
-                    res.json(appUser)
-                }
-            } else {
-                throw Error("invalid username/password");
-            }
-
-        } catch (error) {
-            console.log(error.message);
-            let response = {
-                status: "failed",
-                message: "invalid username/password",
-            };
-            return res.send(response);
-        }
-    }
-
     /* 
     * Retrieves the user document
-    * p
     */
-    async getUserEmail(user) {
+    async getUserEmail(username) {
+        console.log(username)
         const query = User.findOne()
-        .where("email")
-        .equals(user.username)
-        .select("-_id -__v"); //Strips objectId(_id) and document version(__v)
+            .where("email")
+            .equals(username)
+            .select("-_id -__v"); //Strips objectId(_id) and document version(__v)
         try {
             const data = await query.exec();
             return data;
@@ -102,7 +55,7 @@ class UserDB {
             console.log(error)
             throw error
         }
-    } 
+    }
 
     // TODO - Refactor to middleware
     async createUser(userData, voterId) {
