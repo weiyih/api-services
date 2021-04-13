@@ -29,7 +29,6 @@ function authenticate(req, res, next) {
             const verified = jwt.verify(authToken, JWT_PRIVATE_KEY);
             // stores the decoded jwt token in verified
             if (verified) {
-                console.log(verified);
                 req.verified = verified;
                 next();
             } else {
@@ -51,13 +50,12 @@ function authenticate(req, res, next) {
 * @param(user) - User object from UserDB
 */
 async function generateJWT(user) {
-    console.log("Generating JWT")
-    console.log(`Private key: ${JWT_PRIVATE_KEY}`)
     // Synchronous generation of token
     return jwt.sign(
         { user_id: user.email },
         JWT_PRIVATE_KEY,
         { expiresIn: parseInt(JWT_EXPIRY_SECOND), algorithm: JWT_ALGORITHM }
+        // async
         // function (error, token) {
         //     if (error) {
         //         console.log(error);
