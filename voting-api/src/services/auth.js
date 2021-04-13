@@ -52,7 +52,7 @@ function authenticate(req, res, next) {
 async function generateJWT(user) {
     // Synchronous generation of token
     return jwt.sign(
-        { user_id: user.email },
+        { username: user.email },
         JWT_PRIVATE_KEY,
         { expiresIn: parseInt(JWT_EXPIRY_SECOND), algorithm: JWT_ALGORITHM }
         // async
