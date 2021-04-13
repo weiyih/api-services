@@ -11,7 +11,7 @@ const ElectionDB = require("./controllers/ElectionDBController");
 const UserDB = require("./controllers/UserDBController");
 const VoterDB = require("./controllers/VoterDBController");
 // const Transaction = require("./controllers/TransactionController");
-const {authenticateJWT} = require("./controllers/AuthJWT")
+const {authenticateJWT} = require("./services/auth")
 
 require("dotenv").config();
 
@@ -21,7 +21,7 @@ require("dotenv").config();
 const app = express();
 app.use(cookieParser());
 app.use(helmet()); // Helmet middleware to enforce HSTS
-app.use(bodyParser.json()); //parse JSON bodies into JS objects
+app.use(express.json()); //parse JSON bodies into JS objects
 app.use(cors());
 app.use(morgan("combined"));
 
@@ -64,33 +64,31 @@ app.post("/v1/login", UserDB.login);
 
 
 /**
- * GET REQUEST
+ * Returns all election objects
  * Response: Election JSON object
  */
-// app.get('/v1/election', authenticateJWT, (req, res) => {
-
-// app.get("/v1/election/:id", ElectionDB.getElection);
-
-app.get("/v1/election", ElectionDB.getAllElection);
-
-app.get("/v1/candidates/:id", ElectionDB.getCandidates);
-
-app.get('/v1/voters', VoterDB.getVoter);
-// app.get('/v1/voters', VoterDB.getVoterStream);
-
+app.post("/v1/election", 
+    authenticateJWT,
+    ElectionDB.getAllElection);
 
 /**
- * GET REQUEST
+ * POST REQUEST
  * Response: Ballot JSON object
  */
 // app.get('/v1/ballot', authenticateJWT, (req, res) => {
 
-app.get("/v1/ballot/:id", (req, authenticateJWT, res) => {
-    // const data = ElectionDB.ballotData;
-    const election = req.body
-    const data = ElectionDB.getBallots(electionId)
-    res.json(data);
-});
+// app.post("/v1/ballot/:id", (req, authenticateJWT, res) => {
+//     // const data = ElectionDB.ballotData;
+//     const election = req.body
+//     const data = ElectionDB.getBallots(electionId)
+//     res.json(data);
+// });
+
+app.post("/v1/ballot/:id",
+    authenticateJWT,
+    ElectionDB.getBallot()
+    
+)
 
 /**
  * POST REQUEST
