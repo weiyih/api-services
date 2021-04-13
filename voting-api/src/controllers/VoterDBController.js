@@ -1,4 +1,4 @@
-const voterSchema = require("../schemas/Voter");
+const voterSchema = require("../models/Voter");
 const DBFactory = require('./DBFactory');
 require("dotenv").config();
 

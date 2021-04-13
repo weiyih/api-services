@@ -1,6 +1,6 @@
 const DBFactory = require("./DBFactory");
-const electionSchema = require("../schemas/Election");
-const ballotSchema = require("../schemas/Ballot");
+const electionSchema = require("../models/Election");
+const ballotSchema = require("../models/Ballot");
 require("dotenv").config();
 
 // Models
