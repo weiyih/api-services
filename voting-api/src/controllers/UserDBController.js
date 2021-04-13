@@ -1,7 +1,8 @@
 const DBFactory = require("./DBFactory");
-const userSchema = require("../schemas/User");
+const userSchema = require("../models/User");
+const appUserSchema = require("../models/AppUser")
 const { v4: uuidv4 } = require("uuid");
-const authJWT = require("./AuthJWT")
+const authJWT = require("../services/auth")
 require("dotenv").config();
 
 const { JWT_EXPIRY_SECOND } = process.env
@@ -27,34 +28,38 @@ class UserDB {
         }
     }
 
+    // TODO - Move login logic into a separate function. Should not be in the data access layer
+
     async login(req, res) {
         try {
-            const user = req.body;
+            const login = req.body;
 
-            if (user == null) {
+            if (login == null) {
                 throw Error("invalid username/password");
             }
 
-            const query = User.findOne()
-                .where("email")
-                .equals(user.username)
-                .select("-_id -__v"); //Strips objectId(_id) and document version(__v)
+            const user = await this.getUserEmail(login)
 
-            const doc = await query.exec();
+
+
             // TODO - Password hash comparison
             if (doc.email == user.username && doc.password == user.password) {
                 // TODO - Compare deviceIdHash
                 // if (doc.deviceId == user.deviceId ) {
                 // Generate JWT based on email
-                const token = await authJWT.generateJWT(doc)
-                if (token) {
-                    let response = {
-                        status: "success",
-                        message: "logged in",
-                    }
+
+                const authToken = await authJWT.generateJWT(doc)
+
+                const appUser = new AppUser({
+                    username: user.email,
+                    token: authToken,
+                    verified: user.verified
+                })
+
+                if (authToken) {
                     // Set cookie as token string and send
                     res.cookie("token", token, { maxAge: parseInt(JWT_EXPIRY_SECOND) });
-                    res.send(response);
+                    res.json(appUser)
                 }
             } else {
                 throw Error("invalid username/password");
@@ -70,32 +75,34 @@ class UserDB {
         }
     }
 
-    // async loadUserByEmail(req, res, next) {
-    //     (username) {
-    //         const query = User.findOne({ email: username });
-    //         try {
-    //             const data = await query.exec();
-    //             res.json(data);
-    //         } catch (error) {
-    //             // TODO - handle error
-    //             console.log(error);
-    //             return res.status(500).send({ message: error.message });
-    //         }
-    //     }
+    /* 
+    * Retrieves the user document
+    * p
+    */
+    async getUserEmail(user) {
+        const query = User.findOne()
+        .where("email")
+        .equals(user.username)
+        .select("-_id -__v"); //Strips objectId(_id) and document version(__v)
+        try {
+            const data = await query.exec();
+            return data;
+        } catch (error) {
+            console.log(error)
+            throw error
+        }
+    }
 
-    //     async loadUserById(userId) {
-    //         const query = User.findOne({ user_id: userId });
-    //         const res = await query.exec();
-
-    //         try {
-    //             const data = await query.exec();
-    //             res.json(data);
-    //         } catch (error) {
-    //             // TODO - handle error
-    //             console.log(error);
-    //             return res.status(500).send({ message: error.message });
-    //         }
-    //     }
+    async getUserId(userId) {
+        const query = User.findOne({ user_id: userId });
+        try {
+            const data = await query.exec();
+            return data;
+        } catch (error) {
+            console.log(error)
+            throw error
+        }
+    } 
 
     // TODO - Refactor to middleware
     async createUser(userData, voterId) {
