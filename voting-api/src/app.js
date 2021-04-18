@@ -60,17 +60,14 @@ app.post("/v1/signup", (req, res) => {
         });
 });
 
-// Login Controller
-// JWT_EXPIRY_SECOND = 10 minutes
 app.post("/v1/login", login);
-
 
 /**
  * Returns all election objects
  * Response: Election JSON object
  */
 app.post("/v1/election",
-    // authenticate,
+    authenticate,
     ElectionDB.getAllElection
 );
 
@@ -78,8 +75,8 @@ app.post("/v1/election",
  * POST REQUEST
  * Response: Ballot JSON object
  */
-app.post("/v1/ballot",
-    // authenticate,
+app.post("/v1/ballot/:id",
+    authenticate,
     loadData,
     getBallot
 )
