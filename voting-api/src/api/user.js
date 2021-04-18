@@ -3,16 +3,19 @@ const VoterDB = require("../controllers/VoterDBController");
 const { generateJWT } = require("../services/auth")
 const AppUser = require('../models/AppUser')
 
-async function loadData(req, res, next) {
+async function loadUser(req, res, next) {
+    // JWT Verified
     const verified = req.verified
     try {
         const user = await UserDB.getUserByEmail(verified.username)
-        console.log(user)
         const voter = await VoterDB.getVoterById(user.voter_id)
+        console.log(voter)
         req.user = user
         req.voter = voter
         next()
     } catch (error) {
+        // Throw error
+        // throw Error("Unable to retrieve user")
         console.log(error)
         return res.status(500).send({ message: error.message });
     }
@@ -57,4 +60,4 @@ async function login(req, res) {
     }
 }
 
-module.exports = { loadData, login }
+module.exports = { loadUser, login }

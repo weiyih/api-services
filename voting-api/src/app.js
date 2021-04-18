@@ -12,7 +12,7 @@ const UserDB = require("./controllers/UserDBController");
 const VoterDB = require("./controllers/VoterDBController");
 // const Transaction = require("./controllers/TransactionController");
 const { authenticate } = require("./services/auth")
-const { loadData, login } = require("./api/user")
+const { loadUser, login } = require("./api/user")
 const { getBallot } = require("./api/ballot")
 
 require("dotenv").config();
@@ -77,7 +77,7 @@ app.post("/v1/election",
  */
 app.post("/v1/ballot/:id",
     authenticate,
-    loadData,
+    loadUser,
     getBallot
 )
 
