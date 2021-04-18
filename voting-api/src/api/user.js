@@ -1,11 +1,14 @@
 const UserDB = require("../controllers/UserDBController");
 const VoterDB = require("../controllers/VoterDBController");
+const { generateJWT } = require("../services/auth")
+const AppUser = require('../models/AppUser')
 
 async function loadData(req, res, next) {
     const verified = req.verified
     try {
-        const user = await UserDB.getUserId(verified.username)
-        const voter = await VoterDB.getVoter(user.voter_id)
+        const user = await UserDB.getUserByEmail(verified.username)
+        console.log(user)
+        const voter = await VoterDB.getVoterById(user.voter_id)
         req.user = user
         req.voter = voter
         next()
@@ -21,14 +24,14 @@ async function login(req, res) {
         if (!login) {
             throw Error("Error - missing username/password");
         }
-        const user = UserDB.getUserEmail(login.username)
+        const user = await UserDB.getUserByEmail(login.username)
 
         // TODO - Password hash comparison
         // TODO - Compare deviceIdHash
         // TODO - Conditions array ("array.includes(false)")
         if (user.email == login.username && user.password == login.password) {
             // Generate JWT based on email
-            const authToken = await authJWT.generateJWT(user)
+            const authToken = await generateJWT(user)
 
             const appUser = new AppUser(
                 user.email,
@@ -36,18 +39,18 @@ async function login(req, res) {
                 user.verified_status
             )
 
-            if (authToken) {
-                res.cookie("token", authToken, { maxAge: parseInt(JWT_EXPIRY_SECOND) });
-                res.json(appUser);
-            }
+            // if (authToken) {
+            //     res.cookie("token", authToken, { maxAge: parseInt(JWT_EXPIRY_SECOND) });
+            res.json(appUser);
+            // }
         } else {
-            throw Error("Error - Invalid username/password");
+            throw Error("Invalid username/password");
         }
 
     } catch (error) {
         console.log(error.message);
         let response = {
-            status: "error",
+            error: "error",
             message: error.message,
         };
         return res.send(response);
