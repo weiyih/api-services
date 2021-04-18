@@ -19,32 +19,17 @@ class VoterDB {
     }
   }
 
-  // TODO - Refactor to return stream
-  async getVoter(req, res, next) {
-    const query = Voter.find().select("-_id -__v");
-    try {
-      const data = await query.exec();
-      res.json(data);
-    } catch (error) {
-      // TODO - handle error
-      console.log(error);
-      return res.status(500).send({ message: error.message });
-    }
-  }
-
-  // Retrieves the voter based on the voter uuid
-  async loadVoter(voterId) {
+  async getVoterById(voterId) {
     const query = Voter.findOne()
       .where("voter_id")
       .equals(voterId)
-      .select("-_id -__v");
+      .select("-_id -__v"); //Strips objectId(_id) and document version(__v)
     try {
-      const data = await query.exec();
-      res.json(data);
+        const data = await query.exec();
+        return data;
     } catch (error) {
-      // TODO - handle error
-      console.log(error);
-      return res.status(500).send({ message: error.message });
+        console.log(error)
+        throw error
     }
   }
 
