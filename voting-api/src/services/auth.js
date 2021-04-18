@@ -6,12 +6,14 @@ const path = require("path");
 * JWT Authentication Middleware to access routes
 * JWT Token is generated
 */
-
-// TODO - docker secrets for pem files
 const { JWT_EXPIRY_SECOND } = process.env;
 
 const JWT_PRIVATE_KEY = fs.readFileSync(
     path.resolve(__dirname, "../config/ec_private.pem")
+);
+
+const JWT_PUBLIC_KEY = fs.readFileSync(
+    path.resolve(__dirname, "../config/ec_public.pem")
 );
 
 const JWT_ALGORITHM = "ES256"
@@ -26,7 +28,7 @@ function authenticate(req, res, next) {
         // Check if authorization header missing
         if (authHeader) {
             const authToken = authHeader.split(" ")[1];
-            const verified = jwt.verify(authToken, JWT_PRIVATE_KEY);
+            const verified = jwt.verify(authToken, JWT_PUBLIC_KEY);
             // stores the decoded jwt token in verified
             if (verified) {
                 req.verified = verified;
