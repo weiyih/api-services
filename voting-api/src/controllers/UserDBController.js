@@ -31,7 +31,7 @@ class UserDB {
     /* 
     * Retrieves the user document
     */
-    async getUserEmail(username) {
+    async getUserByEmail(username) {
         console.log(username)
         const query = User.findOne()
             .where("email")
@@ -46,7 +46,7 @@ class UserDB {
         }
     }
 
-    async getUserId(userId) {
+    async getUserById(userId) {
         const query = User.findOne({ user_id: userId });
         try {
             const data = await query.exec();
