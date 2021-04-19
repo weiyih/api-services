@@ -21,7 +21,7 @@ class TransactionController {
     }
 
     // Submit vote as transaction
-    async submitTransaction(res, req, next) {
+    async submitTransaction(ballot) {
 
 
         network = await this.gateway.getNetwork('voting-channel');
