@@ -1,10 +1,11 @@
 const ElectionDB = require("../controllers/ElectionDBController");
 const AppCandidate = require("../models/AppCandidate");
 const AppBallot = require("../models/AppBallot");
+const { Transaction } = require("fabric-network");
+const TransactionController = require("../controllers/TransactionController");
+const VoterDB = require("../controllers/VoterDBController");
 
-async function checkVoteStatus(req, res, next) {
 
-}
 
 async function getBallot(req, res, next) {
     // Load user
@@ -26,23 +27,17 @@ async function getBallot(req, res, next) {
             const ballot = await ElectionDB.getBallot(electionId, districtId)
 
             if (ballot) {
-                console.log("Type: ", typeof ballot)
-                console.log("Ballot: \n", ballot)
                 // Generate candidate list from ballot data
                 const candidateList = new Array()
                 for (cand of ballot.candidates) {
                     candidateList.push(new AppCandidate(cand.candidate_id, cand.candidate_name))
                 }
-
-                console.log(ballot.district_name);
                 // Create the AppBallot data to return
                 const data = new AppBallot(
                     electionId,
                     ballot.district_id,
                     ballot.district_name,
                     candidateList)
-
-                console.log('Data: ', data);
                 res.json(data);
             }
             else {
@@ -57,61 +52,110 @@ async function getBallot(req, res, next) {
     }
 }
 
-// Check if ballot has incorrect data
-function validateBallot(ballot) {
-    // Invalid election id
-    if (ballot.election_id !== ElectionDB.electionData.election_id) {
-        return false;
+async function validateBallot(req, res, next) {
+    try {
+        const ballot = req.body
+        const election = req.electionData;
+        const user = req.userData;
+        const voter = req.voterData;
+
+        if (!ballot) {
+            throw Error("Error - Missing ballot data");
+        }
+
+        const timestamp = Date.now();
+
+        var validBallotData = verifyBallotData(election, ballot, voter);
+        var validElectionDates = verifyElectionDates(election, timestamp);
+
+        // Boolean list
+        const validationChecks = [ validBallotData, validElectionDates ]
+
+        if (validationChecks.every(Boolean)) {
+            next();
+        }else {
+            throw Error("Error - invalid ballot data");
+        }
     }
-
-    // TODO - Ward/District Verification
-
-    // Timestamp and election dates
-    const currentTime = Date.now();
-    const ballotTime = Number(ballot.timestamp);
-    // TODO - REDUCE TIME
-    const SUBMISSION_LIMIT = 6000000; // 10 minutes
-
-    // Prevent ballot from being submitted if submission timestamp is >= SUBMISSION_LIMIT
-    if (currentTime - ballotTime >= SUBMISSION_LIMIT) {
-        return false;
-    }
-
-    // Ensure Election allows for electronic voting
-    // Somewhat redundant but may be required in the future?
-    if (ElectionDB.electionData.advanced_polling) {
-        // Ensure voting period is within the advanced poll and election dates
-        const advStartDate = Date.parse(
-            ElectionDB.electionData.advanced_start_date
-        );
-        const advEndDate = Date.parse(ElectionDB.electionData.advanced_end_date);
-
-        const electionStartDate = Date.parse(
-            ElectionDB.electionData.election_start_date
-        );
-        const electionEndDate = Date.parse(
-            ElectionDB.electionData.election_end_date
-        );
-
-        if (currentTime < advStartDate || currentTime >= advEndDate) {
-            return false;
-        }
-        if (currentTime < electionStartDate || currentTime > electionEndDate) {
-            return false;
-        }
-
-        // Ensure candidate selected is part of the list of eligible candidates
-        const candidates = ElectionDB.ballotData.candidate;
-
-        let candidateList = [];
-        for (const [key, candidate] of Object.entries(candidates)) {
-            candidateList.push(candidate.candidate_id);
-        }
-        if (!candidateList.includes(ballot.selected_candidate)) {
-            return false;
-        }
-        return true;
+    catch (error) {
+        console.log(error)
+        return res.status(500).send({ message: error.message });
     }
 }
 
-module.exports = { getBallot }
+async function submitBallot(req, res) {
+    try {
+        const voter = req.voterData;
+        // Update voter status to pending
+        // VoterDB.updateUserVoteStatus(voter.voter_id, election_id)
+
+
+        await TransactionController.submitTransaction(ballot);
+
+    } catch {
+
+    }
+
+}
+
+async function checkVoteStatus(req, res, next) {
+    try {
+        // TODO - check vote status
+        const ballot = await Transaction.checkVote()
+        if (ballot == null) {
+
+        } else {
+            next()
+        }
+
+    }
+    catch (error) {
+        console.log(error)
+        return res.status(500).send({ message: error.message });
+    }
+}
+
+// Helper function to determine if ballot contains valid data
+function verifyBallotData(election, ballot, voter) {
+    const electionId = election.electionId;
+    // Election ID - check if election id submitted matches ballot election id
+    if (ballot.election_id != electionId) return false;
+
+    // District ID - Check if voter data district id matches ballot district id
+    const districtId = voter.vote.find( district => 
+        district.election_id == electionId
+    );
+    if (ballot.district_id != districtId) return false;
+
+    // Candidate ID - Check if candidate id exists in the district
+    const districtBallots = await ElectionDB.getBallot(electionId, districtId)    
+    const found = districtBallots.districts.find( district => 
+        district.candidates.find( candidate => candidate.candidate_id == ballot.candidate_id )
+    )
+    if (!found) return false;
+
+    return true;
+}
+
+// Helper function to verify the current timestamp is between the election dates
+function verifyElectionDates(election) {
+    const timestamp = Date.now()
+
+    const startTimestamp = Date.parse(election.election_start_date)
+    const endTimestamp = Date.parse(election.election_end_date)
+
+    // timestamp is before the election start and end times
+    if (timestamp < startTimestamp || timestamp > endTimestamp) return false
+
+    // advanced polling enabled
+    if (election.advancedPolling) {
+        const advancedStartTimestamp = Date.parse(election.advanced_start_date)
+        const advancedEndTimestamp = Date.parse(election.advanced_end_date)
+
+        if (timestamp < advancedStartTimestamp || timestamp > advancedEndTimestamp) return false
+        else return true
+    }
+    return true
+}
+
+module.exports = { getBallot, validateBallot, submitBallot }
