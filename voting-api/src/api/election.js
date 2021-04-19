@@ -15,4 +15,15 @@ async function loadElection(req, res, next) {
     }
 }
 
-module.exports = { loadElection }
+async function getElections(req, res, next) {
+    try {
+        const data = await ElectionDB.getAllElection();
+        res.json(data);
+        // next();
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send({ message: error.message });
+    }
+}
+
+module.exports = { loadElection, getElections }

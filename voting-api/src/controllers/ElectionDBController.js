@@ -27,7 +27,7 @@ class ElectionDB {
   /**
    * Retrieve all valid elections
    */
-  async getAllElection(req, res, next) {
+  async getAllElection() {
     // Query retrieves all elections that are not disabled (ie. deleted)
     // Strips away objectId(_id) and document version(__v)
     const query = Election.find()
@@ -35,12 +35,11 @@ class ElectionDB {
       .select("-_id -__v");
     try {
       const data = await query.exec();
-      res.json(data);
+      return data;
       // next();
     } catch (error) {
       // TODO - handle error
       console.log(error);
-      return res.status(500).send({ message: error.message });
     }
   }
 
