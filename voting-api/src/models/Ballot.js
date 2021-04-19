@@ -13,7 +13,7 @@ const districtSchema= new mongoose.Schema({
     district_id: {
         type: Number
     },
-    district_string: {
+    district_name: {
         type: String
     },
     candidates: [candidateSchema],
