@@ -65,7 +65,7 @@ async function validateBallot(req, res, next) {
 
         const timestamp = Date.now();
 
-        var validBallotData = verifyBallotData(election, ballot, voter);
+        var validBallotData = await verifyBallotData(election, ballot, voter);
         var validElectionDates = verifyElectionDates(election, timestamp);
 
         // Boolean list
@@ -116,7 +116,7 @@ async function checkVoteStatus(req, res, next) {
 }
 
 // Helper function to determine if ballot contains valid data
-function verifyBallotData(election, ballot, voter) {
+async function verifyBallotData(election, ballot, voter) {
     const electionId = election.electionId;
     // Election ID - check if election id submitted matches ballot election id
     if (ballot.election_id != electionId) return false;
