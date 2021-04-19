@@ -57,23 +57,30 @@ class ElectionDB {
       return data;
     } catch (error) {
       console.log(error);
-      throw (`Error - Unable to retrieve election: ${electionId}`)
+      throw (`Error - Unable to retrieve election: ${electionId} from DB`)
     }
 
   }
 
+    /**
+   * Retrieve election by electionId
+   */
   async getBallot(electionId, districtId) {
     // Build query
     const query = Ballot.findOne()
       .where("election_id").equals(electionId)
-      .where("district_id").equals(districtId)
       .select("-_id -__v"); //Strips objectId(_id) and document version(__v)
 
-    const data = await query.exec();
-    return data;
+    const election = await query.exec();
+
+    const data = election.districts.filter( ballot => {
+      return ballot.district_id == districtId;
+    })
+    // return object instead of array
+    return data[0];
   } catch(error) {
     console.log(error);
-    throw ("Error - Unable to retrieve ballot")
+    throw ("Error - Unable to retrieve ballot from DB")
   }
 }
 
