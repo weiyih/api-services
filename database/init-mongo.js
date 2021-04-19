@@ -83,7 +83,7 @@ electionDB.election.insert({
 })
 
 electionDB.election.insert({
-    election_id: '63ba80e0-cae8-44a6-8a78-7ebe898e3351',
+    election_id: 'c88aeee1-134b-403c-bc37-651a890548c0',
     election_name: 'Test Election 2020',
     election_description: 'The Test Election for Blockchain Voting Capstone',  
     election_start_date: '2020-03-01T00:00:00.000Z',
@@ -102,7 +102,7 @@ electionDB.election.insert({
 })
 
 electionDB.election.insert({
-    election_id: 'c88aeee1-134b-403c-bc37-651a890548c0',
+    election_id: '63ba80e0-cae8-44a6-8a78-7ebe898e3351',
     election_name: 'No Advanced Polling Election 2020',
     election_description: 'No Advanced Polling for Blockchain Voting Capstone',  
     election_start_date: '2020-03-01T00:00:00.000Z',
@@ -114,7 +114,7 @@ electionDB.election.insert({
     updated_at: '2020-02-01T00:00:00.000Z',
     locked: 1, // 0 - unlocked(editable), 1 - locked(not running/in progress/completed)
     progress: 0, // 0 - not running, 1 - in progress, 2 - completed
-    disabled: 1, // 0 - deleted election, 1 - valid election
+    disabled: 0, // 0 - deleted election, 1 - valid election
     channel_name: 'test-election-2020',
     contract_name: 'voting_contract',
     __v: 0
@@ -133,7 +133,7 @@ electionDB.election.insert({
     updated_at: '2020-02-01T00:00:00.000Z',
     locked: 1, // 0 - unlocked(editable), 1 - locked(not running/in progress/completed)
     progress: 0, // 0 - not running, 1 - in progress, 2 - completed
-    disabled: 1, // 0 - deleted election, 1 - valid election
+    disabled: 0, // 0 - deleted election, 1 - valid election
     channel_name: 'test-election-2020',
     contract_name: 'voting_contract',
     __v: 0
@@ -145,6 +145,7 @@ electionDB.candidates.insert({
     election_id: 'c88aeee1-134b-403c-bc37-651a890548c0',
     districts: [{
         district_id: 1,
+        district_name: 'District 1 - East Side',
         candidates: [{
             candidate_id: '2d8248ab-a831-4b5c-a3b2-6c5ef317731a',
             candidate_name: 'Gwen Stacy'
@@ -160,6 +161,7 @@ electionDB.candidates.insert({
     ]},
     {
         district_id: 2,
+        district_name: 'District 2 - West Side',
         candidates: [{
                 candidate_id: '7cdbe69c-5d3e-4a1c-a89e-e5d06b28c1b4',
                 candidate_name: 'Lex Luthor'
@@ -181,6 +183,7 @@ electionDB.candidates.insert({
     election_id: '9cd5f582-75e5-4bee-b451-e5417c18e761',
     districts: [{
         district_id: 1,
+        district_name: 'District A',
         candidates: [{
             candidate_id: '2d8248ab-a831-4b5c-a3b2-6c5ef317731a',
             candidate_name: 'Tony Stark'
@@ -196,6 +199,7 @@ electionDB.candidates.insert({
     ]},
     {
         district_id: 2,
+        district_name: 'District B',
         candidates: [{
                 candidate_id: '7cdbe69c-5d3e-4a1c-a89e-e5d06b28c1b4',
                 candidate_name: 'Selina Kyle'
