@@ -9,7 +9,6 @@ async function loadUser(req, res, next) {
     try {
         const user = await UserDB.getUserByEmail(verified.username)
         const voter = await VoterDB.getVoterById(user.voter_id)
-        console.log(voter)
         req.user = user
         req.voter = voter
         next()

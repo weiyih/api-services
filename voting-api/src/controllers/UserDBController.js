@@ -32,7 +32,6 @@ class UserDB {
     * Retrieves the user document
     */
     async getUserByEmail(username) {
-        console.log(username)
         const query = User.findOne()
             .where("email")
             .equals(username)
