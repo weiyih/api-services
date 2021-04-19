@@ -1,5 +1,5 @@
 const DBFactory = require("./DBFactory");
-const userSchema = require("../models/User");
+const userSchema = require("../models/api/User");
 const { v4: uuidv4 } = require("uuid");
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");

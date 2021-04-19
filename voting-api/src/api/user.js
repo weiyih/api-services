@@ -1,7 +1,7 @@
 const UserDB = require("../controllers/UserDBController");
 const VoterDB = require("../controllers/VoterDBController");
 const { generateJWT } = require("../services/auth")
-const AppUser = require('../models/AppUser')
+const AppUser = require('../models/app/AppUser')
 
 async function loadUser(req, res, next) {
     // JWT Verified
@@ -84,6 +84,10 @@ async function signupUser(req, res) {
             };
             res.send(response);
         });
+}
+
+async function verifyUser(req, res) {
+    
 }
 
 module.exports = { loadUser, login, signupUser }

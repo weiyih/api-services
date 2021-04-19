@@ -1,5 +1,5 @@
 const ElectionDB = require("../controllers/ElectionDBController");
-const AppCandidate = require("../models/AppCandidate");
+const AppCandidate = require("../models/app/AppCandidate");
 const AppBallot = require("../models/app/AppBallot");
 const { Transaction } = require("fabric-network");
 const { getVoteStatus } = require("./voter");
