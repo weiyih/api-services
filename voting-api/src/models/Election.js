@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const updateVersioningPlugin = require('mongoose-update-versioning');
 
 const electionSchema = new Schema({
     election_id: {
@@ -49,5 +50,7 @@ const electionSchema = new Schema({
         type: Number
     }
 });
+
+electionSchema.plugin(updateVersioningPlugin)
 
 module.exports = electionSchema;

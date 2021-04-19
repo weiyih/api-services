@@ -6,11 +6,13 @@ const verifiedSchema = new Schema({
         type: String,
     },
     status: {
-        type: Number     
+        type: Number,
+        min: [0, 'Invalid verification status'],
+        max: [1, 'Invalid verification status'],
     }
-}) 
+})
 
-const voteStatusSchema = new Schema({
+const electionStatusSchema = new Schema({
     election_id: {
         type: String,
         index: true,
@@ -20,7 +22,9 @@ const voteStatusSchema = new Schema({
         type: Number
     },
     vote_status: {
-        type: Number
+        type: Number,
+        min: [0, 'Invalid vote status'],
+        max: [2, 'Invalid vote status'],
     }
 })
 
@@ -63,8 +67,8 @@ const voterSchema = new Schema({
     zip_code: {
         type: String,
     },    
-    vote_status: {
-        type: [voteStatusSchema],
+    election_status: {
+        type: [electionStatusSchema],
     },
     vote_online: {
         type: Number,
