@@ -57,4 +57,33 @@ async function login(req, res) {
     }
 }
 
-module.exports = { loadUser, login }
+async function signupUser(req, res) {
+    const user = req.body;
+    /*
+    * TODO
+    * Verify user credentials by matching VoterDB
+    */
+    UserDB.createUser(user, "voter-uuid-placeholder")
+        .then((res) => {
+            const response = {
+                status: true,
+                data: {
+                    message: "signup successful",
+                    user: res.user_id,
+                },
+            };
+            res.send(response);
+        })
+        .catch((error) => {
+            const response = {
+                status: false,
+                data: {
+                    message: "signup unsuccessful",
+                    error: error,
+                },
+            };
+            res.send(response);
+        });
+}
+
+module.exports = { loadUser, login, signupUser }
