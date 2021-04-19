@@ -10,30 +10,18 @@ const verifiedSchema = new Schema({
     }
 }) 
 
-const voteElectionSchema = new Schema({
+const voteStatusSchema = new Schema({
     election_id: {
         type: String,
         index: true,
         unique: true,
     },
     district_id: {
-        type: Number     
-    }
-})
-
-const electionVoteSchema = new Schema({
-    election_id: {
-        type: String,
-        index: true,
-        unique: true,
+        type: Number
     },
-    status: {
-        type: Number     
+    vote_status: {
+        type: Number
     }
-})
-
-const voteStatusSchema = new Schema({
-    vote_status: [electionVoteSchema]
 })
 
 const voterSchema = new Schema({
@@ -75,9 +63,6 @@ const voterSchema = new Schema({
     zip_code: {
         type: String,
     },    
-    vote: {
-        type: [voteElectionSchema],
-    },
     vote_status: {
         type: [voteStatusSchema],
     },
