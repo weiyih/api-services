@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const path = require("path");
+const bcrypt = require("bcrypt");
 
 /*
 * JWT Authentication Middleware to access routes
@@ -69,6 +70,23 @@ async function generateJWT(user) {
         //     }
         // }
     )
+}
+
+async function verifyDevice(req, res, next) {
+    try {
+        const user = req.userData;
+        const userDeviceId = req.data.device_id;
+
+        const match = await bcrypt.compare(userDeviceId, user.device_id)
+        if (match) {
+            next();
+        } else {
+            throw Error ("Error - Unverified device")
+        }
+    } catch (error) {
+        // TODO - replace with different workflow and error code
+        return res.status(401).end();
+    }
 }
 
 module.exports = { authenticate, generateJWT }
