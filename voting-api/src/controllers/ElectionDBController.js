@@ -1,6 +1,6 @@
 const DBFactory = require("./DBFactory");
 const electionSchema = require("../models/Election");
-const ballotSchema = require("../models/Ballot");
+const ballotSchema = require("../models/api/Ballot");
 require("dotenv").config();
 
 // Models
@@ -62,21 +62,20 @@ class ElectionDB {
 
   }
 
-    /**
+  /**
    * Retrieve election by electionId
    */
   async getBallot(electionId, districtId) {
-    // Build query
+    // TODO - use aggregate unwind lookups?
     const query = Ballot.findOne()
       .where("election_id").equals(electionId)
       .select("-_id -__v"); //Strips objectId(_id) and document version(__v)
 
     const election = await query.exec();
-
     const data = election.districts.filter( ballot => {
       return ballot.district_id == districtId;
     })
-    // return object instead of array
+    // Return object instead of array
     return data[0];
   } catch(error) {
     console.log(error);

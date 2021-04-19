@@ -1,8 +1,9 @@
 const DBFactory = require("./DBFactory");
 const userSchema = require("../models/User");
-const AppUser = require("../models/AppUser")
 const { v4: uuidv4 } = require("uuid");
-const authJWT = require("../services/auth")
+const crypto = require("crypto");
+const bcrypt = require("bcrypt");
+
 require("dotenv").config();
 
 const { JWT_EXPIRY_SECOND } = process.env
@@ -45,18 +46,17 @@ class UserDB {
         }
     }
 
-    async getUserById(userId) {
-        const query = User.findOne({ user_id: userId });
-        try {
-            const data = await query.exec();
-            return data;
-        } catch (error) {
-            console.log(error)
-            throw error
-        }
-    }
+    // async getUserById(userId) {
+    //     const query = User.findOne({ user_id: userId });
+    //     try {
+    //         const data = await query.exec();
+    //         return data;
+    //     } catch (error) {
+    //         console.log(error)
+    //         throw error
+    //     }
+    // }
 
-    // TODO - Refactor to middleware
     async createUser(userData, voterId) {
         const tempUserId = uuidv4();
         const tempVoterId = uuidv4();

@@ -1,9 +1,10 @@
 const ElectionDB = require("../controllers/ElectionDBController");
 const AppCandidate = require("../models/AppCandidate");
-const AppBallot = require("../models/AppBallot");
+const AppBallot = require("../models/app/AppBallot");
 const { Transaction } = require("fabric-network");
 const TransactionController = require("../controllers/TransactionController");
 const VoterDB = require("../controllers/VoterDBController");
+const { updateUserVoteStatus } = require("../controllers/VoterDBController");
 
 
 
@@ -86,6 +87,10 @@ async function validateBallot(req, res, next) {
 async function submitBallot(req, res) {
     try {
         const voter = req.voterData;
+        const election = req.electionData;
+
+        // electionId, ballotId, status 0 - not voted, 1 - pending, 2 - voted
+        const update = updateUserVoteStatus(voter.voter_id, election.election_id, 1)
         // Update voter status to pending
         // VoterDB.updateUserVoteStatus(voter.voter_id, election_id)
 
@@ -100,6 +105,7 @@ async function submitBallot(req, res) {
 
 async function checkVoteStatus(req, res, next) {
     try {
+                const election = req.electionData;
         // TODO - check vote status
         const ballot = await Transaction.checkVote()
         if (ballot == null) {
