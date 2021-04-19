@@ -7,15 +7,13 @@ async function loadUser(req, res, next) {
     // JWT Verified
     const verified = req.verified
     try {
-        const user = await UserDB.getUserByEmail(verified.username)
-        const voter = await VoterDB.getVoterById(user.voter_id)
-        req.user = user
-        req.voter = voter
-        next()
+        const user = await UserDB.getUserByEmail(verified.username);
+        const voter = await VoterDB.getVoterById(user.voter_id);
+        req.userData = user;
+        req.voterData = voter;
+        next();
     } catch (error) {
-        // Throw error
-        // throw Error("Unable to retrieve user")
-        console.log(error)
+        console.log(error);
         return res.status(500).send({ message: error.message });
     }
 }
