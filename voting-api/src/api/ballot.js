@@ -1,4 +1,6 @@
 const ElectionDB = require("../controllers/ElectionDBController");
+const AppCandidate = require("../models/AppCandidate");
+const AppBallot = require("../models/AppBallot");
 
 async function checkVoteStatus(req, res, next) {
 
@@ -10,17 +12,44 @@ async function getBallot(req, res, next) {
     const electionId = req.params.id;
     const electionList = voter.vote;
 
-    const districtId = electionList.forEach(election => {
+    var districtId = null;
+
+    for (election of electionList) {
         if (election.election_id == electionId) {
-            return election.district_id;
+            districtId = election.district_id;
+            break;
         }
-        return null
-    });
+    }
 
     try {
         if (districtId) {
-            const ballot = await ElectionDB.getBallot(electionId)
-            res.json(ballot);
+            const ballot = await ElectionDB.getBallot(electionId, districtId)
+
+            if (ballot) {
+                console.log("Type: ", typeof ballot)
+                console.log("Ballot: \n", ballot)
+                // Generate candidate list from ballot data
+                const candidateList = new Array()
+                for (cand of ballot.candidates) {
+                    candidateList.push(new AppCandidate(cand.candidate_id, cand.candidate_name))
+                }
+
+                console.log(ballot.district_name);
+                // Create the AppBallot data to return
+                const data = new AppBallot(
+                    electionId,
+                    ballot.district_id,
+                    ballot.district_name,
+                    candidateList)
+
+                console.log('Data: ', data);
+                res.json(data);
+            }
+            else {
+                throw Error("Unable to retrieve ballot")
+            }
+        } else {
+            throw Error("Unable to retrieve ballot")
         }
     } catch (error) {
         console.log(error);
@@ -83,5 +112,6 @@ function validateBallot(ballot) {
         }
         return true;
     }
+}
 
 module.exports = { getBallot }
