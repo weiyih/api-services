@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 
-// Loads client application identity to access blockchain
+// Loads pre-enrolled client application identity to access blockchain
 async function loadIdentity() {
     try {
         // Get wallet path to load identity
@@ -16,13 +16,12 @@ async function loadIdentity() {
         if (!identity) {
             const cert = fs.readFileSync(path.resolve(__dirname, '../config/wallet/api-services/certificate.pem'), 'utf8');
             const privateKey = fs.readFileSync(path.resolve(__dirname, '../config/wallet/api-services/private_key.pem'), 'utf8');
-            // const identity = X509WalletMixin.createIdentity('node-api-mobile', cert, privateKey);
             const identity = {
                 credentials: {
                     certificate: cert,
                     privateKey: privateKey,
                 },
-                mspId: 'api-services',
+                mspId: 'org1msp',
                 type: 'X.509',
             };
             await wallet.put('api-services', identity);
@@ -51,12 +50,12 @@ async function connectGateway() {
         const gatewayOptions = {
             identity: 'api-services',
             wallet,
-            discovery: { enabled: false, asLocalhost: false },
+            discovery: { enabled: true, asLocalhost: false },
         }
         // Connect to network
 
         await gateway.connect(ccpJSON, gatewayOptions);
-        console.log('Connected to gateway');
+        // console.log('Connected to gateway');
         return gateway;
     } catch (error) {
         console.log('Error connecting to gateway:', error);
