@@ -17,7 +17,7 @@ userDB.user.insert({
     email: 'weiyih@sheridancollege.ca',
     email_status: 'Verified',
     password: '$2b$10$Velaf074EWDlbTY9EyQso.CzUg0HCI72UNw5BRYb1Ulwp72bor4ji',
-    biometricPassword: '',
+    biometric: '',
     voter_id: '3b241101-e2bb-4255-8caf-4136c566a962',
     date_create: '2020-01-01T00:00:00Z',
     device_id: '',
