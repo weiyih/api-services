@@ -1,7 +1,12 @@
 const UserDB = require("../controllers/UserDBController");
 const VoterDB = require("../controllers/VoterDBController");
 const { generateJWT } = require("../services/auth")
+const bcrypt = require("bcrypt");
 const AppUser = require('../models/app/AppUser')
+require('dotenv').config;
+
+const { SALT_ROUNDS } = process.env
+
 
 async function loadUser(req, res, next) {
     // JWT Verified
@@ -25,24 +30,18 @@ async function login(req, res) {
             throw Error("Error - missing username/password");
         }
         const user = await UserDB.getUserByEmail(login.username)
-
-        // TODO - Password hash comparison
-        // TODO - Compare deviceIdHash
-        // TODO - Conditions array ("array.includes(false)")
-        if (user.email == login.username && user.password == login.password) {
+        const passwordMatch = await bcrypt.compare(login.password, user.password)
+        // const deviceMatch = await bcrypt.compare(login.device_id, user.device_id)
+        // TODO - Conditions array 
+        if (passwordMatch) {
             // Generate JWT based on email
             const authToken = await generateJWT(user)
-
-            const appUser = new AppUser(
-                user.email,
-                authToken,
-                user.verified_status
-            )
-
-            // if (authToken) {
-            //     res.cookie("token", authToken, { maxAge: parseInt(JWT_EXPIRY_SECOND) });
+            const appUser = {
+                username: user.email,
+                token: authToken,
+                verified: user.verified_status
+            }
             res.json(appUser);
-            // }
         } else {
             throw Error("Invalid username/password");
         }
@@ -57,6 +56,25 @@ async function login(req, res) {
     }
 }
 
+async function registerBiometric(req, res) {
+    const biometricToken = req.body;
+    try {
+        const hash = await bcrypt.hash(myPlaintextPassword, saltRounds);
+        await UserDB.updateBiometricPassword(hash)
+
+    } catch (errror) {
+        const response = {
+            status: false,
+            data: {
+                message: "biometric registration unsuccessful",
+                error: error,
+            },
+        };
+        res.send(response);
+    }
+}
+
+
 async function signupUser(req, res) {
     const user = req.body;
     /*
@@ -69,7 +87,7 @@ async function signupUser(req, res) {
                 status: true,
                 data: {
                     message: "signup successful",
-                    user: res.user_id,
+                    data: res.user_id,
                 },
             };
             res.send(response);
@@ -87,7 +105,7 @@ async function signupUser(req, res) {
 }
 
 async function verifyUser(req, res) {
-    
+
 }
 
-module.exports = { loadUser, login, signupUser }
+module.exports = { loadUser, login, signupUser, registerBiometric }
