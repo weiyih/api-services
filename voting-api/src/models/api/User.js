@@ -5,7 +5,7 @@ const userSchema = new Schema({
     user_id: {
         type: String,
         index: true,
-        unique: true,
+        // unique: true, //NOTE THIS IS NOT A VALIDATOR
     },
     first_name: {
         type: String,
