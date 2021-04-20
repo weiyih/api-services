@@ -12,25 +12,6 @@ function prettyJSONString(inputString) {
     return JSON.parse(inputString);
 }
 
-// Transaction submitted or queries evaluated
-
-async function queryBallot(voter, channel) {
-    try {
-        const gateway = await connectGateway()
-        const network = await gateway.getNetwork(channel)
-        const contract = network.getContract('ballot-contract');
-
-        let result = await contract.evaluateTransaction('ReadBallot', ballot.voter_id);
-        console.log(`Query: ${prettyJSONString(submitResult.toString())}`)
-
-    } catch (error) {
-        console.log(error)
-    } finally {
-        disconnect()
-    }
-}
-
-
 // Submit vote as transaction
 async function submitBallotTransaction(ballot, channel) {
     const gateway = await connectGateway()
