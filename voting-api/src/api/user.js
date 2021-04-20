@@ -7,7 +7,6 @@ require('dotenv').config;
 
 const { SALT_ROUNDS } = process.env
 
-
 async function loadUser(req, res, next) {
     // JWT Verified
     const verified = req.verified
@@ -27,7 +26,7 @@ async function login(req, res) {
     try {
         const login = req.body;
         if (!login) {
-            throw Error("Error - missing username/password");
+            throw Error("missing username/password");
         }
         const user = await UserDB.getUserByEmail(login.username)
         const passwordMatch = await bcrypt.compare(login.password, user.password)
@@ -43,7 +42,7 @@ async function login(req, res) {
             }
             res.json(appUser);
         } else {
-            throw Error("Invalid username/password");
+            throw Error("invalid username/password");
         }
 
     } catch (error) {
@@ -57,23 +56,33 @@ async function login(req, res) {
 }
 
 async function registerBiometric(req, res) {
-    const biometricToken = req.body;
-    try {
-        const hash = await bcrypt.hash(myPlaintextPassword, saltRounds);
-        await UserDB.updateBiometricPassword(hash)
+    const biometric = req.body;
+    const verified = req.verified
 
-    } catch (errror) {
+    console.log(biometric.password);
+
+    try {
+        console.log('hashing and salt')
+        const hash = await bcrypt.hash(biometric.password, Number(SALT_ROUNDS));
+        console.log('hash ', hash)
+        console.log(verified.username);
+        const updated = await UserDB.updateBiometricPassword(verified.username, hash)
+        if (updated) {
+            console.log(updated)
+            res.json(true)
+        } else {
+            throw Error("biometric registration unsuccessful")
+        }
+    } catch (error) {
         const response = {
             status: false,
             data: {
-                message: "biometric registration unsuccessful",
                 error: error,
             },
         };
-        res.send(response);
+        res.json(response);
     }
 }
-
 
 async function signupUser(req, res) {
     const user = req.body;

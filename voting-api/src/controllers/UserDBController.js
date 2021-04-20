@@ -34,8 +34,7 @@ class UserDB {
     */
     async getUserByEmail(username) {
         const query = User.findOne()
-            .where("email")
-            .equals(username)
+            .where("email").equals(username)
             .select("-_id -__v"); //Strips objectId(_id) and document version(__v)
         try {
             const data = await query.exec();
@@ -93,5 +92,25 @@ class UserDB {
             throw new Error(error);
         }
     }
+
+    async updateBiometricPassword(username, newPassword) {
+        const filter = { 'email': username };
+        const update = { 'biometric': newPassword };
+        const options = {
+            new: true,
+        };
+
+        try {
+            const doc = await User.findOneAndUpdate(filter, update, options);
+            if (!doc) {
+                throw Error("unable to update biometric password")
+            }
+            return doc;
+        } catch (error) {
+            console.log(error);
+            throw Error(error)
+        }
+    }
 }
+
 module.exports = new UserDB();

@@ -32,6 +32,9 @@ const userSchema = new Schema({
     password: {
         type: String,
     },
+    biometric: {
+        type:String,
+    },
     voter_id: {
         type: String
     },
