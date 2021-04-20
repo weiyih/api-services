@@ -13,7 +13,7 @@ const { getVoteStatus } = require("./voter");
 async function getBallot(req, res) {
     const voter = req.voterData;
     const electionId = req.params.id;
-    const electionList = voter.vote;
+    const electionList = voter.election_status;
 
     var districtId = null;
 
@@ -139,7 +139,8 @@ async function submitBallot(req, res) {
             // await TransactionController.submitTransaction(ballot);'
         }
 
-
+        // TODO
+        res.send("success");
 
     } catch {
 
