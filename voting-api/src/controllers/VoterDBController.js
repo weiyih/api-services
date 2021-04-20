@@ -60,19 +60,39 @@ class VoterDB {
         }
     }
 
+    // Returns JSON object of the list of election_status
+    async getAllVoteStatus(voterId) {
+        const query = Voter.findOne()
+            .where('voter_id').equals(voterId)
+            .select("-_id -__v"); //Strips objectId(_id) and document version(__v)
+        try {
+            const data = await query.exec();
+            return data.election_status;
+        }
+        catch (error) {
+            console.log(error)
+            throw Error(error)
+        }
+    }
+
+    // Returns the vote_status of the election_id
     async getVoteStatus(voterId, electionId) {
         const query = Voter.findOne()
             .where('voter_id').equals(voterId)
             .where('election_status.election_id').equals(electionId)
             .select("-_id -__v"); //Strips objectId(_id) and document version(__v)
-
-        try { 
+        try {
             const data = await query.exec();
-            return data;
+            // console.log(data.election_status);
+            const election = data.election_status.filter( election => {
+                return election.election_id == electionId;
+              })
+            console.log(election)
+            return election[0].vote_status;
         }
-        catch (error) { 
+        catch (error) {
             console.log(error)
-            throw error
+            throw Error(error)
         }
     }
 
