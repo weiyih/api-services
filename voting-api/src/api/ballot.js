@@ -1,8 +1,7 @@
 const ElectionDB = require("../controllers/ElectionDBController");
-const AppCandidate = require("../models/app/AppCandidate");
-const AppBallot = require("../models/app/AppBallot");
 const { Transaction } = require("fabric-network");
-const { getVoteStatus } = require("./voter");
+const { getVoteStatus, updateUserVoteStatus } = require("./voter");
+const { submitBallotTransaction } = require("../controllers/TransactionController");
 // const TransactionController = require("../controllers/TransactionController");
 
 
@@ -29,24 +28,27 @@ async function getBallot(req, res) {
             const ballot = await ElectionDB.getBallot(electionId, districtId)
 
             if (ballot) {
+                // TODO - Create a model interface to ensure response ballot is valid?
+
                 // Generate candidate list from ballot data
                 const candidateList = new Array()
                 for (cand of ballot.candidates) {
-                    candidateList.push(new AppCandidate(cand.candidate_id, cand.candidate_name))
+                    const candidate = { candidate_id: cand.candidate_id, candidate_name: cand.candidate_name }
+                    candidateList.push(candidate)
                 }
-                // Create the AppBallot data to return
-                const data = new AppBallot(
-                    electionId,
-                    ballot.district_id,
-                    ballot.district_name,
-                    candidateList)
+                const data = {
+                    election_id: electionId,
+                    district_id: ballot.districtId,
+                    district_name: ballot.district_name,
+                    candidate_list: candidateList
+                }
                 res.json(data);
             }
             else {
-                throw Error("Unable to retrieve ballot")
+                throw Error("unable to retrieve ballot")
             }
         } else {
-            throw Error("Unable to retrieve ballot")
+            throw Error("unable to retrieve ballot")
         }
     } catch (error) {
         console.log(error);
@@ -62,29 +64,17 @@ async function checkVoteStatus(req, res, next) {
         const voter = req.voterData;
         const election = req.electionData;
 
-        // Check Voter DB
-        const voterStatus = getVoteStatus(voter.voter_id, election.election_id)
+        // Check Voter DB for the vote_status
+        const voteStatus = getVoteStatus(voter.voter_id, election.election_id)
 
         if (voterStatus == 0) {
             next()
         } else if (voterStatus == 1) {
             // PENDING VOTE
-
-            // Check if vote exists
-        } else if (voterStatus == 2) {
-            // VOTED
-
-            // Success response
+            // TODO - registerEventListener()
+        } else if (voterStatus > 1) {
+            res.send("already voted")
         }
-
-        // Check Blockchain
-        // const ballot = await Transaction.checkVote()
-        if (ballot == null) {
-
-        } else {
-            next()
-        }
-
     }
     catch (error) {
         console.log(error)
@@ -98,11 +88,10 @@ async function validateBallot(req, res, next) {
     try {
         const ballot = req.body
         const election = req.electionData;
-        const user = req.userData;
         const voter = req.voterData;
 
         if (!ballot) {
-            throw Error("Error - Missing ballot data");
+            throw Error("missing ballot data");
         }
 
         const timestamp = Date.now();
@@ -110,13 +99,12 @@ async function validateBallot(req, res, next) {
         var validBallotData = await verifyBallotData(election, ballot, voter);
         var validElectionDates = verifyElectionDates(election, timestamp);
 
-        // Boolean list
+        // Ballot validation list
         const validationChecks = [validBallotData, validElectionDates]
-
         if (validationChecks.every(Boolean)) {
-            next();
+            next(); //submitBallot
         } else {
-            throw Error("Error - invalid ballot data");
+            throw Error("invalid ballot data");
         }
     }
     catch (error) {
@@ -127,22 +115,31 @@ async function validateBallot(req, res, next) {
 
 // Submit ballot data for transaction on the blockchain
 async function submitBallot(req, res) {
-    try {
-        const voter = req.voterData;
-        const election = req.electionData;
+    const voter = req.voterData;
+    const election = req.electionData;
+    const channel = election.channel_name
+    const ballot = req.body
 
+    try {
         // TODO - TS Enum for status
         // electionId, ballotId, status 0 - not voted, 1 - pending, 2 - voted
-        const update = updateUserVoteStatus(voter.voter_id, election.election_id, 1)
+        const updateStatus = updateUserVoteStatus(voter.voter_id, election.election_id, 1)
 
-        if (update) {
-            // await TransactionController.submitTransaction(ballot);'
+        if (updateStatus) {
+            // NOTE: Assume ballot will always be unique as the submission will check voter status
+            // before submitBallot middleware is reached
+            const ballotResult = await submitBallotTransaction(ballot, channel)
+
+            if (ballotResult)  {
+                const timestamp = ballotResult.timestamp
+                updateUserVoteStatus(voter.voter_id, election.election_id, timestamp)
+                res.send("success")
+            }
         }
-
-        // TODO
-        res.send("success");
-
-    } catch {
+    } catch (error) {
+        console.log(error)
+        updateUserVoteStatus(voter.voter_id, election.election_id, 0)
+        res.send("unable to submit ballot")
 
     }
 }
