@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const path = require("path");
 const bcrypt = require("bcrypt");
+require("dotenv").config();
 
 /*
 * JWT Authentication Middleware to access routes
