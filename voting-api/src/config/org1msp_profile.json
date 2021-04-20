@@ -12,8 +12,7 @@
                 "n42c65c-org1ca.mycluster-wdc04-b-455243-f4d3f1e9d1c9762032fe715d31d976b5-0000.us-east.containers.appdomain.cloud:7054"
             ],
             "peers": [
-                "n42c65c-peerorg1.mycluster-wdc04-b-455243-f4d3f1e9d1c9762032fe715d31d976b5-0000.us-east.containers.appdomain.cloud:7051",
-                "n42c65c-peer2org1.mycluster-wdc04-b-455243-f4d3f1e9d1c9762032fe715d31d976b5-0000.us-east.containers.appdomain.cloud:7051"
+                "n42c65c-peerorg1.mycluster-wdc04-b-455243-f4d3f1e9d1c9762032fe715d31d976b5-0000.us-east.containers.appdomain.cloud:7051"
             ]
         }
     },
@@ -25,15 +24,6 @@
             },
             "grpcOptions": {
                 "ssl-target-name-override": "n42c65c-peerorg1.mycluster-wdc04-b-455243-f4d3f1e9d1c9762032fe715d31d976b5-0000.us-east.containers.appdomain.cloud"
-            }
-        },
-        "n42c65c-peer2org1.mycluster-wdc04-b-455243-f4d3f1e9d1c9762032fe715d31d976b5-0000.us-east.containers.appdomain.cloud:7051": {
-            "url": "grpcs://n42c65c-peer2org1.mycluster-wdc04-b-455243-f4d3f1e9d1c9762032fe715d31d976b5-0000.us-east.containers.appdomain.cloud:7051",
-            "tlsCACerts": {
-                "pem": "-----BEGIN CERTIFICATE-----\nMIICDDCCAbKgAwIBAgIUN+ASg3SOHS1bGZ3YWnUgiBW/kf8wCgYIKoZIzj0EAwIw\nZDELMAkGA1UEBhMCVVMxFzAVBgNVBAgTDk5vcnRoIENhcm9saW5hMRQwEgYDVQQK\nEwtIeXBlcmxlZGdlcjEPMA0GA1UECxMGRmFicmljMRUwEwYDVQQDEwxvcmcxY2Et\ndGxzY2EwHhcNMjEwNDE5MjAwODAwWhcNMzYwNDE1MjAwODAwWjBkMQswCQYDVQQG\nEwJVUzEXMBUGA1UECBMOTm9ydGggQ2Fyb2xpbmExFDASBgNVBAoTC0h5cGVybGVk\nZ2VyMQ8wDQYDVQQLEwZGYWJyaWMxFTATBgNVBAMTDG9yZzFjYS10bHNjYTBZMBMG\nByqGSM49AgEGCCqGSM49AwEHA0IABHZBOQptALMBLp0YquIK72ug+e21luRKJIMk\nTBTPaeKOFIJG9hw8tR5Q5/CmjD6uEc/7j/v4LflbaCZ+ZP7UaoejQjBAMA4GA1Ud\nDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSRzjIBaL5fXUZ8\nUc20TSw5DX+ZyjAKBggqhkjOPQQDAgNIADBFAiEArNz8oLjn/1VGPCeC8oe1smQr\nwHC313HCADRfUQBZPEsCIHRBFLl/CzTVdViDifdE+gJ8a/5zrDW/o3Rj/Ersch1k\n-----END CERTIFICATE-----\n"
-            },
-            "grpcOptions": {
-                "ssl-target-name-override": "n42c65c-peer2org1.mycluster-wdc04-b-455243-f4d3f1e9d1c9762032fe715d31d976b5-0000.us-east.containers.appdomain.cloud"
             }
         }
     },
