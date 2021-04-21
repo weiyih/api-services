@@ -13,7 +13,7 @@ async function loadElection(req, res, next) {
     } catch (error) {
         const response = {
             success: "error",
-            data: { error: error.message }
+            error: { message: error.message }
         }
         res.json(response);
     }
@@ -25,17 +25,29 @@ async function loadElection(req, res, next) {
 */
 async function getElections(req, res) {
     try {
-        const data = await ElectionDB.getAllElection();
+        const voterData = req.voterData
+        const elections = await ElectionDB.getAllElection();
+        const voterStatus = voterData.election_status
 
+        // elections.forEach( election => {
+        //     let match = voterStatus.find( status => status.election_id == election.election_id )
+        //     if (match) election.vote_status = match.vote_status
+        // })
+
+        const output = elections.map(election => {
+            const match = voterStatus.find(status => status.election_id == election.election_id);
+            if (match) return { ...election._doc, vote_status: match.vote_status };
+        });
+        
         const response = {
             success: "success",
-            data: { data }
+            data: output
         }
         res.json(response);
     } catch (error) {
         const response = {
             success: "error",
-            data: { error: error.message }
+            error: { message: error.message }
         }
         res.json(response);
     }

@@ -17,15 +17,17 @@ async function loadUser(req, res, next) {
         req.voterData = voter;
         next();
     } catch (error) {
-        console.log(error);
-        return res.status(500).send({ message: error.message });
+        const response = {
+            success: "error",
+            error: { message: error.message }
+        }
+        res.json(response);
     }
 }
 
 async function login(req, res) {
     try {
         const login = req.body;
-
         if (!login || !login.hasOwnProperty('username') || !login.hasOwnProperty('password')) {
             throw Error("missing username/password");
         }
@@ -57,7 +59,7 @@ async function login(req, res) {
     } catch (error) {
         const response = {
             success: "error",
-            data: { error: error.message }
+            error: { message: error.message }
         };
         res.json(response);
     }
@@ -84,7 +86,7 @@ async function registerBiometric(req, res) {
 
         const response = {
             success: "error",
-            data: { error: error.message }
+            error: { message: error.message }
         }
         res.json(response);
     }

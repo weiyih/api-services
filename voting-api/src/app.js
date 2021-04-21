@@ -37,6 +37,7 @@ app.post("/v1/register",
  */
 app.post("/v1/election",
     authenticate,
+    loadUser,
     getElections
 );
 

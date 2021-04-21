@@ -1,7 +1,6 @@
 const ElectionDB = require("../controllers/ElectionDBController");
 const { updateUserVoteStatus } = require("./voter");
 const { submitBallotTransaction, queryBallotExist } = require("../controllers/TransactionController");
-const { TokenExpiredError } = require("jsonwebtoken");
 // const TransactionController = require("../controllers/TransactionController");
 
 
@@ -36,13 +35,19 @@ async function getBallot(req, res) {
                     const candidate = { candidate_id: cand.candidate_id, candidate_name: cand.candidate_name }
                     candidateList.push(candidate)
                 }
-                const data = {
+                const resBallot = {
                     election_id: electionId,
                     district_id: districtId,
                     district_name: ballot.district_name,
                     candidate_list: candidateList
                 }
-                res.json(data);
+
+                const response = {
+                    success: "success",
+                    data: resBallot
+                }
+                console.log(response)
+                res.json(response);
             }
             else {
                 throw Error("unable to retrieve ballot")
@@ -53,7 +58,7 @@ async function getBallot(req, res) {
     } catch (error) {
         const response = {
             success: "error",
-            data: { message: TokenExpiredError.message }
+            error: { message: error.message }
         }
         res.json(response)
     }
@@ -69,7 +74,6 @@ async function checkVoteStatus(req, res, next) {
         const electionData = req.electionData;
         const electionId = electionData.election_id;
 
-        console.log(electionData)
         // Retrieve voterStatus from the voterData
         const electionStatus = voterData.election_status
         const election = electionStatus.filter(election => {
@@ -77,6 +81,7 @@ async function checkVoteStatus(req, res, next) {
         })
         const voteStatus = election[0].vote_status;
 
+        console.log('VoteStatus: ', voteStatus)
         if (voteStatus == 0) {
             next() //validateBallot
         } else if (voteStatus == 1) {
@@ -94,6 +99,7 @@ async function checkVoteStatus(req, res, next) {
 
             } else {
                 updateUserVoteStatus(voterData.voter_id, electionData.election_id, 0)
+                next()
             }
         // This code should technically never be reached
         } else if (voteStatus > 1) {
@@ -101,12 +107,17 @@ async function checkVoteStatus(req, res, next) {
                 success: "success",
                 data: { message: "user already voted" }
             }
+            console.log(response)
             res.json(response)
         }
     }
     catch (error) {
-        console.log(error)
-        return res.status(500).send({ message: error.message });
+        const response = {
+            success: "error",
+            data: { message: error.message }
+        }
+        console.log(response)
+        res.json(response)
     }
 }
 
@@ -174,12 +185,13 @@ async function submitBallot(req, res) {
             const ballotResult = await submitBallotTransaction(ballotData, channel, contract)
 
             if (ballotResult) {
-                const timestamp = ballotResult.timestamp
+                const ballotTimestamp = ballotResult.timestamp
                 updateUserVoteStatus(voterData.voter_id, electionData.election_id, timestamp)
                 const response = {
                     success: "success",
-                    data: { message: "ballot submitted" }
+                    data: { message: "ballot submitted", timestamp: ballotTimestamp }
                 }
+                console.log(response)
                 res.json(response)
             }
         }
@@ -195,20 +207,21 @@ async function submitBallot(req, res) {
         if (ballotExist) {
             const ballotTimestamp = Number(ballotExist.timestamp)
             updateUserVoteStatus(voterData.voter_id, electionData.election_id, ballotTimestamp)
-
             const response = {
                 success: "success",
-                data: { message: "ballot submitted" }
+                data: { message: "ballot submitted", timestamp: ballotTimestamp }
+
             }
+            console.log(response)
             res.json(response)
         } else {
             updateUserVoteStatus(voterData.voter_id, electionData.election_id, 0)
             // TODO - response unabl
-
             const response = {
                 success: "error",
-                data: { error: "unable to submit vote" }
+                error: { message: "unable to submit vote" }
             }
+            console.log(response)
             res.json(response)
         }
     }

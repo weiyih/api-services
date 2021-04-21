@@ -17,19 +17,19 @@ const electionSchema = new Schema({
     },
 
     election_start_date: {
-        type: Date
+        type: String
     },
     election_end_date: {
-        type: Date
+        type: String
     },
     advanced_polling: {
         type: Boolean
     },
     advanced_start_date: {
-        type: Date
+        type: String
     },
     advanced_end_date: {
-        type: Date
+        type: String
     },
     channel_name: {
         type: String
