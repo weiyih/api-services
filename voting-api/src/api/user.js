@@ -8,7 +8,7 @@ require('dotenv').config;
 const { SALT_ROUNDS } = process.env
 
 async function loadUser(req, res, next) {
-    // JWT Verified
+    console.log('loading user')
     const verified = req.verified
     try {
         const user = await UserDB.getUserByEmail(verified.username);
@@ -28,13 +28,16 @@ async function login(req, res) {
         if (!login) {
             throw Error("missing username/password");
         }
+        
         const user = await UserDB.getUserByEmail(login.username)
         const passwordMatch = await bcrypt.compare(login.password, user.password)
+        const biometricMatch = await bcrypt.compare(login.password, user.biometric)
+    
         // const deviceMatch = await bcrypt.compare(login.device_id, user.device_id)
         // TODO - Conditions array 
-        if (passwordMatch) {
+        if (passwordMatch || biometricMatch) {
             // Generate JWT based on email
-            const authToken = await generateJWT(user)
+            const authToken = generateJWT(user)
             const appUser = {
                 username: user.email,
                 token: authToken,
@@ -58,17 +61,11 @@ async function login(req, res) {
 async function registerBiometric(req, res) {
     const biometric = req.body;
     const verified = req.verified
-
-    console.log(biometric.password);
-
     try {
-        console.log('hashing and salt')
         const hash = await bcrypt.hash(biometric.password, Number(SALT_ROUNDS));
-        console.log('hash ', hash)
-        console.log(verified.username);
         const updated = await UserDB.updateBiometricPassword(verified.username, hash)
         if (updated) {
-            console.log(updated)
+            // TODO - replace with sucess results
             res.json(true)
         } else {
             throw Error("biometric registration unsuccessful")
