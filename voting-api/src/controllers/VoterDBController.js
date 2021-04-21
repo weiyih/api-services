@@ -75,27 +75,6 @@ class VoterDB {
         }
     }
 
-    // Returns the vote_status of the election_id
-    async getVoteStatus(voterId, electionId) {
-        const query = Voter.findOne()
-            .where('voter_id').equals(voterId)
-            .where('election_status.election_id').equals(electionId)
-            .select("-_id -__v"); //Strips objectId(_id) and document version(__v)
-        try {
-            const data = await query.exec();
-            // console.log(data.election_status);
-            const election = data.election_status.filter( election => {
-                return election.election_id == electionId;
-              })
-            console.log(election)
-            return election[0].vote_status;
-        }
-        catch (error) {
-            console.log(error)
-            throw Error(error)
-        }
-    }
-
     // Updates Voter document to reflect the User intention to vote online when registering
     // async updateUserOnlineVote(voterId) {
     //   const query = Voter.findOneAndUpdate(
