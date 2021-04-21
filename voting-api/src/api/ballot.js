@@ -1,7 +1,7 @@
 const ElectionDB = require("../controllers/ElectionDBController");
-const { Transaction } = require("fabric-network");
 const { updateUserVoteStatus } = require("./voter");
 const { submitBallotTransaction, queryBallotExist } = require("../controllers/TransactionController");
+const { TokenExpiredError } = require("jsonwebtoken");
 // const TransactionController = require("../controllers/TransactionController");
 
 
@@ -51,8 +51,11 @@ async function getBallot(req, res) {
             throw Error("unable to retrieve ballot")
         }
     } catch (error) {
-        console.log(error);
-        return res.status(500).send({ message: error.message });
+        const response = {
+            success: "error",
+            data: { message: TokenExpiredError.message }
+        }
+        res.json(response)
     }
 }
 
@@ -79,15 +82,26 @@ async function checkVoteStatus(req, res, next) {
         } else if (voteStatus == 1) {
             // TODO - Refactor to EventListener to better handle network delays
             const ballotExist = await checkVoteExists(voterData, electionData.channel_name, electionData.contract_name);
-
             if (ballotExist) {
                 const ballotTimestamp = Number(ballotExist.timestamp)
                 updateUserVoteStatus(voterData.voter_id, electionData.election_id, ballotTimestamp)
+
+                const response = {
+                    success: "success",
+                    data: { message: "ballot submitted" }
+                }
+                res.json(response)
+
             } else {
                 updateUserVoteStatus(voterData.voter_id, electionData.election_id, 0)
             }
+        // This code should technically never be reached
         } else if (voteStatus > 1) {
-            res.send("already voted")
+            const response = {
+                success: "success",
+                data: { message: "user already voted" }
+            }
+            res.json(response)
         }
     }
     catch (error) {
@@ -163,11 +177,10 @@ async function submitBallot(req, res) {
                 const timestamp = ballotResult.timestamp
                 updateUserVoteStatus(voterData.voter_id, electionData.election_id, timestamp)
                 const response = {
-                    "message": "success",
-                    "data": "success"
+                    success: "success",
+                    data: { message: "ballot submitted" }
                 }
-                console.log("submited")
-                res.json("response")
+                res.json(response)
             }
         }
     } catch (error) {
@@ -182,19 +195,21 @@ async function submitBallot(req, res) {
         if (ballotExist) {
             const ballotTimestamp = Number(ballotExist.timestamp)
             updateUserVoteStatus(voterData.voter_id, electionData.election_id, ballotTimestamp)
-            console.log('checking ballot exist - success')
-            // TODO - response ballot exists
 
             const response = {
                 success: "success",
-                data: "ballot transacted"
+                data: { message: "ballot submitted" }
             }
             res.json(response)
         } else {
             updateUserVoteStatus(voterData.voter_id, electionData.election_id, 0)
             // TODO - response unabl
-            console.log('caught -unable to process vote all errors')
-            res.json(error)
+
+            const response = {
+                success: "error",
+                data: { error: "unable to submit vote" }
+            }
+            res.json(response)
         }
     }
 }
@@ -208,7 +223,6 @@ async function checkVoteExists(voter, channel, contract) {
     } catch (error) {
         throw Error(error)
     }
-
 }
 
 

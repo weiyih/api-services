@@ -25,14 +25,14 @@ async function loadUser(req, res, next) {
 async function login(req, res) {
     try {
         const login = req.body;
-        if (!login) {
+        if (!login || !login.hasOwnProperty['username'] || !login.hasOwnProperty['password']) {
             throw Error("missing username/password");
         }
-        
+
         const user = await UserDB.getUserByEmail(login.username)
         const passwordMatch = await bcrypt.compare(login.password, user.password)
         const biometricMatch = await bcrypt.compare(login.password, user.biometric)
-    
+
         // const deviceMatch = await bcrypt.compare(login.device_id, user.device_id)
         // TODO - Conditions array 
         if (passwordMatch || biometricMatch) {
@@ -43,18 +43,22 @@ async function login(req, res) {
                 token: authToken,
                 verified: user.verified_status
             }
-            res.json(appUser);
+
+            const response = {
+                success: "success",
+                data: appUser
+            }
+            res.json(response);
         } else {
             throw Error("invalid username/password");
         }
 
     } catch (error) {
-        console.log(error.message);
-        let response = {
-            error: "error",
-            message: error.message,
+        const response = {
+            success: "error",
+            data: { error: error.message }
         };
-        return res.send(response);
+        res.json(response);
     }
 }
 
@@ -65,49 +69,50 @@ async function registerBiometric(req, res) {
         const hash = await bcrypt.hash(biometric.password, Number(SALT_ROUNDS));
         const updated = await UserDB.updateBiometricPassword(verified.username, hash)
         if (updated) {
-            // TODO - replace with sucess results
-            res.json(true)
+
+            const response = {
+                success: "success",
+                data: { message: "biometric registered" }
+            }
+            res.json(response);
+
         } else {
             throw Error("biometric registration unsuccessful")
         }
     } catch (error) {
+
         const response = {
-            status: false,
-            data: {
-                error: error,
-            },
-        };
+            success: "error",
+            data: { error: error.message }
+        }
         res.json(response);
     }
 }
 
 async function signupUser(req, res) {
-    const user = req.body;
-    /*
-    * TODO
-    * Verify user credentials by matching VoterDB
-    */
-    UserDB.createUser(user, "voter-uuid-placeholder")
-        .then((res) => {
-            const response = {
-                status: true,
-                data: {
-                    message: "signup successful",
-                    data: res.user_id,
-                },
-            };
-            res.send(response);
-        })
-        .catch((error) => {
-            const response = {
-                status: false,
-                data: {
-                    message: "signup unsuccessful",
-                    error: error,
-                },
-            };
-            res.send(response);
-        });
+//     const user = req.body;
+
+//     UserDB.createUser(user, "voter-uuid-placeholder")
+//         .then((res) => {
+//             const response = {
+//                 status: true,
+//                 data: {
+//                     message: "signup successful",
+//                     data: res.user_id,
+//                 },
+//             };
+//             res.send(response);
+//         })
+//         .catch((error) => {
+//             const response = {
+//                 status: false,
+//                 data: {
+//                     message: "signup unsuccessful",
+//                     error: error,
+//                 },
+//             };
+//             res.send(response);
+//         });
 }
 
 async function verifyUser(req, res) {

@@ -11,8 +11,11 @@ async function loadElection(req, res, next) {
         req.electionData = election;
         next()
     } catch (error) {
-        console.log(error)
-        return res.status(500).send({ message: error.message });
+        const response = {
+            success: "error",
+            data: { error: error.message }
+        }
+        res.json(response);
     }
 }
 
@@ -23,10 +26,18 @@ async function loadElection(req, res, next) {
 async function getElections(req, res) {
     try {
         const data = await ElectionDB.getAllElection();
-        res.json(data);
+
+        const response = {
+            success: "success",
+            data: { data }
+        }
+        res.json(response);
     } catch (error) {
-        console.log(error);
-        return res.status(500).send({ message: error.message });
+        const response = {
+            success: "error",
+            data: { error: error.message }
+        }
+        res.json(response);
     }
 }
 

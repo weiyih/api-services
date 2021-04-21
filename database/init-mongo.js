@@ -24,7 +24,6 @@ userDB.user.insert({
     driver_license: 'W2247-79009-10131',
     verified_status: false,
     __v: 0 
-    // verified
 })
 
 // Mock Voter associated with User
