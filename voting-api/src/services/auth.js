@@ -49,28 +49,17 @@ function authenticate(req, res, next) {
 };
 
 /*
-* Generates a JWT token that contains the user_email (username)
+* Synchronously generates a JWT token that contains the user_email (username)
 * JWT_EXPIRY_MILLISECOND is 30mins
 * @param(user) - User object from UserDB
 */
-async function generateJWT(user) {
-    // Synchronous generation of token
-    return jwt.sign(
+function generateJWT(user) {
+    const token = jwt.sign(
         { username: user.email },
         JWT_PRIVATE_KEY,
-        { expiresIn: parseInt(JWT_EXPIRY_SECOND), algorithm: JWT_ALGORITHM }
-        // async
-        // function (error, token) {
-        //     if (error) {
-        //         console.log(error);
-        //         throw Error(`Error generating JWT token - ${error}`);
-        //     }
-        //     else {
-        //         console.log(`Token: ${token}`)
-        //         return token
-        //     }
-        // }
+        { expiresIn: parseInt(JWT_EXPIRY_SECOND), algorithm: JWT_ALGORITHM },
     )
+    return token;
 }
 
 async function verifyDevice(req, res, next) {
@@ -82,10 +71,9 @@ async function verifyDevice(req, res, next) {
         if (match) {
             next();
         } else {
-            throw Error ("Error - Unverified device")
+            throw Error("Error - Unverified device")
         }
     } catch (error) {
-        // TODO - replace with different workflow and error code
         return res.status(401).end();
     }
 }
