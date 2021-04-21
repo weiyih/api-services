@@ -1,7 +1,7 @@
 const ElectionDB = require("../controllers/ElectionDBController");
 const { Transaction } = require("fabric-network");
-const { getVoteStatus, updateUserVoteStatus } = require("./voter");
-const { submitBallotTransaction } = require("../controllers/TransactionController");
+const { updateUserVoteStatus } = require("./voter");
+const { submitBallotTransaction, queryBallotExist } = require("../controllers/TransactionController");
 // const TransactionController = require("../controllers/TransactionController");
 
 
@@ -38,7 +38,7 @@ async function getBallot(req, res) {
                 }
                 const data = {
                     election_id: electionId,
-                    district_id: ballot.districtId,
+                    district_id: districtId,
                     district_name: ballot.district_name,
                     candidate_list: candidateList
                 }
@@ -60,19 +60,33 @@ async function getBallot(req, res) {
 * Checks if the voter's vote_status to determine if the blockchain has received a vote
 */
 async function checkVoteStatus(req, res, next) {
+    console.log('checking vote status')
     try {
-        const voter = req.voterData;
-        const election = req.electionData;
+        const voterData = req.voterData;
+        const electionData = req.electionData;
+        const electionId = electionData.election_id;
 
-        // Check Voter DB for the vote_status
-        const voteStatus = getVoteStatus(voter.voter_id, election.election_id)
+        console.log(electionData)
+        // Retrieve voterStatus from the voterData
+        const electionStatus = voterData.election_status
+        const election = electionStatus.filter(election => {
+            return election.election_id == electionId;
+        })
+        const voteStatus = election[0].vote_status;
 
-        if (voterStatus == 0) {
-            next()
-        } else if (voterStatus == 1) {
-            // PENDING VOTE
-            // TODO - registerEventListener()
-        } else if (voterStatus > 1) {
+        if (voteStatus == 0) {
+            next() //validateBallot
+        } else if (voteStatus == 1) {
+            // TODO - Refactor to EventListener to better handle network delays
+            const ballotExist = await checkVoteExists(voterData);
+
+            if (ballotExist) {
+                const ballotTimestamp = Number(ballotExist.timestamp)
+                updateUserVoteStatus(voterData.voter_id, electionData.election_id, ballotTimestamp)
+            } else {
+                updateUserVoteStatus(voterData.voter_id, electionData.election_id, 0)
+            }
+        } else if (voteStatus > 1) {
             res.send("already voted")
         }
     }
@@ -82,26 +96,38 @@ async function checkVoteStatus(req, res, next) {
     }
 }
 
-
 // Validates the ballot data before submitBallot is called
 async function validateBallot(req, res, next) {
+    console.log('validating ballot')
     try {
         const ballot = req.body
-        const election = req.electionData;
-        const voter = req.voterData;
+        const electionData = req.electionData;
+        const voterData = req.voterData;
 
         if (!ballot) {
             throw Error("missing ballot data");
         }
 
         const timestamp = Date.now();
+        var validBallotData = await verifyBallotData(electionData, ballot, voterData);
+        var validElectionDates = verifyElectionDates(electionData, timestamp);
+        var validateBallotKeys = verifyBallotKeyData(ballot)
 
-        var validBallotData = await verifyBallotData(election, ballot, voter);
-        var validElectionDates = verifyElectionDates(election, timestamp);
-
+        console.log(validBallotData)
+        console.log(validElectionDates)
+        console.log(validateBallotKeys)
         // Ballot validation list
-        const validationChecks = [validBallotData, validElectionDates]
+        const validationChecks = [validBallotData, validElectionDates, validateBallotKeys]
         if (validationChecks.every(Boolean)) {
+            console.log("validated")
+            const ballotData = {
+                id: voterData.voter_id,
+                election_id: ballot.election_id,
+                district_id: ballot.district_id,
+                candidate_id: ballot.candidate_id,
+                timestamp: timestamp
+            }
+            req.ballotData = ballotData
             next(); //submitBallot
         } else {
             throw Error("invalid ballot data");
@@ -115,54 +141,97 @@ async function validateBallot(req, res, next) {
 
 // Submit ballot data for transaction on the blockchain
 async function submitBallot(req, res) {
-    const voter = req.voterData;
-    const election = req.electionData;
-    const channel = election.channel_name
-    const ballot = req.body
+    console.log('submitting ballot')
+    const voterData = req.voterData;
+    const electionData = req.electionData;
+    const channel = electionData.channel_name
+    const ballotData = req.ballotData
 
     try {
+        console.log("attempting to submit")
         // TODO - TS Enum for status
-        // electionId, ballotId, status 0 - not voted, 1 - pending, 2 - voted
-        const updateStatus = updateUserVoteStatus(voter.voter_id, election.election_id, 1)
+        // electionId, ballotId, status 0 - not voted, 1 - pending, 1+ - timestamp
+        const updateStatus = await updateUserVoteStatus(voterData.voter_id, electionData.election_id, 1)
 
         if (updateStatus) {
             // NOTE: Assume ballot will always be unique as the submission will check voter status
             // before submitBallot middleware is reached
-            const ballotResult = await submitBallotTransaction(ballot, channel)
+            const ballotResult = await submitBallotTransaction(ballotData, channel)
 
-            if (ballotResult)  {
+            if (ballotResult) {
                 const timestamp = ballotResult.timestamp
-                updateUserVoteStatus(voter.voter_id, election.election_id, timestamp)
-                res.send("success")
+                updateUserVoteStatus(voterData.voter_id, electionData.election_id, timestamp)
+                const response = {
+                    "message": "success",
+                    "data": "success"
+                }
+                console.log("submited")
+                res.json("response")
             }
         }
     } catch (error) {
-        console.log(error)
-        updateUserVoteStatus(voter.voter_id, election.election_id, 0)
-        res.send("unable to submit ballot")
+        // NOTE: See note on TransactionController about the errors
 
+        // DIRTY HACK - catches errors from ballot submission.
+        // checks if ballot exists.
+        // true - assume something went wrong in asynchronous flow of previous ballot transaction
+        // updates the voter vote status for election
+        // false - assume something went wrong and just give generic error
+        const ballotExist = await checkVoteExists(voterData);
+        if (ballotExist) {
+            const ballotTimestamp = Number(ballotExist.timestamp)
+            updateUserVoteStatus(voterData.voter_id, electionData.election_id, ballotTimestamp)
+            console.log('checking ballot exist - success')
+            // TODO - response ballot exists
+
+            const response = {
+                success: "success",
+                data: "ballot transacted"
+            }
+            res.json(response)
+        } else {
+            updateUserVoteStatus(voterData.voter_id, electionData.election_id, 0)
+            // TODO - response unabl
+            console.log('caught -unable to process vote all errors')
+            res.json(error)
+        }
     }
 }
 
+// Retrieves the ballot by querying the blockchain network
+async function checkVoteExists(voter) {
+    try {
+        const ballotExists = await queryBallotExist(voter.voter_id)
+        console.log(ballotExists)
+        return ballotExists
+    } catch (error) {
+        throw Error(error)
+    }
+
+}
+
+
 // Helper function to determine if ballot contains valid data
-async function verifyBallotData(election, ballot, voter) {
-    const electionId = election.electionId;
+async function verifyBallotData(electionData, ballotData, voterData) {
     // Election ID - check if election id submitted matches ballot election id
-    if (ballot.election_id != electionId) return false;
+    const electionId = electionData.election_id;
+    if (ballotData.election_id != electionId) return false;
 
     // District ID - Check if voter data district id matches ballot district id
-    const districtId = voter.vote.find(district =>
-        district.election_id == electionId
+    // retrieve the election_status to obtain the district_id
+    const selected = voterData.election_status.find(election =>
+        election.election_id == electionId
     );
-    if (ballot.district_id != districtId) return false;
+    const districtId = selected.district_id
+    if (ballotData.district_id != districtId) return false;
 
     // Candidate ID - Check if candidate id exists in the district
-    const districtBallots = await ElectionDB.getBallot(electionId, districtId)
-    const found = districtBallots.districts.find(district =>
-        district.candidates.find(candidate => candidate.candidate_id == ballot.candidate_id)
+    // Load the ballot for the user and district
+    const districtBallot = await ElectionDB.getBallot(electionId, districtId)
+    const candidateFound = districtBallot.candidates.find(candidate =>
+        ballotData.candidate_id == candidate.candidate_id
     )
-    if (!found) return false;
-
+    if (!candidateFound) return false;
     return true;
 }
 
@@ -185,6 +254,21 @@ function verifyElectionDates(election) {
         else return true
     }
     return true
+}
+
+// Helper function to verify incoming data has all the necessary keys and data
+function verifyBallotKeyData(ballot) {
+    const keys = ['election_id', 'district_id', 'candidate_id']
+    const hasKeys = keys.every(key => ballot.hasOwnProperty(key))
+
+    if (hasKeys) {
+        for (var key in ballot) {
+            if (ballot[key] == null && ballot[key] == "")
+                return false;
+        }
+        return true;
+    }
+    return false
 }
 
 module.exports = { getBallot, validateBallot, submitBallot, checkVoteStatus }
