@@ -16,11 +16,10 @@ function prettyJSONString(inputString) {
 * Submit vote as transaction to the blockchain network
 * Attempt to submit followed by a query to ensure ballot is commited
 */ 
-async function submitBallotTransaction(ballot, channel) {
+async function submitBallotTransaction(ballot, channel, contractName) {
     const gateway = await connectGateway()
-    // const network = await gateway.getNetwork(channel)
-    const network = await gateway.getNetwork("test-channel2")
-    const contract = network.getContract('unique-test');
+    const network = await gateway.getNetwork(channel)
+    const contract = network.getContract(contractName);
 
     // Parse out ballot information
     const voter_id = ballot.id
@@ -58,11 +57,10 @@ async function submitBallotTransaction(ballot, channel) {
 * Query vote as transaction to the blockchain network
 * Returns the ballot object
 */ 
-async function queryBallotExist(user, channel) {
+async function queryBallotExist(user, channel, contractName) {
     const gateway = await connectGateway()
-    // const network = await gateway.getNetwork(channel)
-    const network = await gateway.getNetwork("test-channel2")
-    const contract = network.getContract('unique-test');
+    const network = await gateway.getNetwork(channel)
+    const contract = network.getContract(contractName);
 
     const voterId = user.voter_id
     try {

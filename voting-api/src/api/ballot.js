@@ -78,7 +78,7 @@ async function checkVoteStatus(req, res, next) {
             next() //validateBallot
         } else if (voteStatus == 1) {
             // TODO - Refactor to EventListener to better handle network delays
-            const ballotExist = await checkVoteExists(voterData);
+            const ballotExist = await checkVoteExists(voterData, electionData.channel_name, electionData.contract_name);
 
             if (ballotExist) {
                 const ballotTimestamp = Number(ballotExist.timestamp)
@@ -145,6 +145,7 @@ async function submitBallot(req, res) {
     const voterData = req.voterData;
     const electionData = req.electionData;
     const channel = electionData.channel_name
+    const contract = electionData.contract_name
     const ballotData = req.ballotData
 
     try {
@@ -156,7 +157,7 @@ async function submitBallot(req, res) {
         if (updateStatus) {
             // NOTE: Assume ballot will always be unique as the submission will check voter status
             // before submitBallot middleware is reached
-            const ballotResult = await submitBallotTransaction(ballotData, channel)
+            const ballotResult = await submitBallotTransaction(ballotData, channel, contract)
 
             if (ballotResult) {
                 const timestamp = ballotResult.timestamp
@@ -177,7 +178,7 @@ async function submitBallot(req, res) {
         // true - assume something went wrong in asynchronous flow of previous ballot transaction
         // updates the voter vote status for election
         // false - assume something went wrong and just give generic error
-        const ballotExist = await checkVoteExists(voterData);
+        const ballotExist = await checkVoteExists(voterData, channel, contract);
         if (ballotExist) {
             const ballotTimestamp = Number(ballotExist.timestamp)
             updateUserVoteStatus(voterData.voter_id, electionData.election_id, ballotTimestamp)
@@ -199,9 +200,9 @@ async function submitBallot(req, res) {
 }
 
 // Retrieves the ballot by querying the blockchain network
-async function checkVoteExists(voter) {
+async function checkVoteExists(voter, channel, contract) {
     try {
-        const ballotExists = await queryBallotExist(voter.voter_id)
+        const ballotExists = await queryBallotExist(voter.voter_id, channel, contract)
         console.log(ballotExists)
         return ballotExists
     } catch (error) {
