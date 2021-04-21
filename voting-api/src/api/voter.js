@@ -11,16 +11,5 @@ async function updateUserVoteStatus(electionId, ballotId, status) {
         throw Error(error)
     }
 }
-// Returns 0,1, or the timestamp of the vote
-async function getVoteStatus(electionId, ballotId, status) {
-    try {
-        const data = await VoterDB.getVoteStatus(electionId, ballotId, status)
-        if (data) return data;
-    } catch (error) {
-        console.log(error)
-        throw Error(error)
-    }
-}
 
-
-module.exports = { updateUserVoteStatus, getVoteStatus }
+module.exports = { updateUserVoteStatus }
