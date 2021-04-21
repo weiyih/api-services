@@ -65,15 +65,16 @@ electionDB.election.insert({
     election_start_date: '2021-03-01T00:00:00.000Z',
     election_end_date: '2022-01-01T00:00:00.000Z',
     advanced_polling: true,
-    advanced_start_date: '2020-01-01T00:00:00.000Z',
-    advanced_end_date: '2020-12-31T24:00:00.000Z',
+    advanced_start_date: '2021-01-01T00:00:00.000Z',
+    advanced_end_date: '2021-12-31T24:00:00.000Z',
     created_at: '2020-01-01T00:00:00.000Z',
     updated_at: '2020-02-01T00:00:00.000Z',
-    locked: 0, 
-    progress: 0,
-    disabled: 1,
+    locked: 1, // 0 - unlocked(editable), 1 - locked(not running/in progress/completed)
+    progress: 1, // 0 - not running, 1 - in progress, 2 - completed
+    disabled: 1, // 0 - deleted election, 1 - valid election
+    channel_name: 'test-election-2020',
     channel_name: 'oakville-municipal-election-2022',
-    contract_name: 'voting_contract',
+    contract_name: 'oakville-municipal-election-2022',
     __v: 0
 })
 
@@ -81,56 +82,37 @@ electionDB.election.insert({
     election_id: 'c88aeee1-134b-403c-bc37-651a890548c0',
     election_name: 'Test Election 2020',
     election_description: 'The Test Election for Blockchain Voting Capstone',  
-    election_start_date: '2020-03-01T00:00:00.000Z',
-    election_end_date: '2021-01-01T00:00:00.000Z',
+    election_start_date: '2021-03-01T00:00:00.000Z',
+    election_end_date: '2022-01-01T00:00:00.000Z',
     advanced_polling: true,
-    advanced_start_date: '2020-01-01T00:00:00.000Z',
-    advanced_end_date: '2020-12-31T24:00:00.000Z',
+    advanced_start_date: '2021-01-01T00:00:00.000Z',
+    advanced_end_date: '2021-12-31T24:00:00.000Z',
     created_at: '2020-01-01T00:00:00.000Z',
     updated_at: '2020-02-01T00:00:00.000Z',
     locked: 1, // 0 - unlocked(editable), 1 - locked(not running/in progress/completed)
-    progress: 0, // 0 - not running, 1 - in progress, 2 - completed
+    progress: 1, // 0 - not running, 1 - in progress, 2 - completed
     disabled: 1, // 0 - deleted election, 1 - valid election
     channel_name: 'test-election-2020',
-    contract_name: 'voting_contract',
+    contract_name: 'test-election-2020',
     __v: 0
 })
 
 electionDB.election.insert({
     election_id: '63ba80e0-cae8-44a6-8a78-7ebe898e3351',
-    election_name: 'No Advanced Polling Election 2020',
-    election_description: 'No Advanced Polling for Blockchain Voting Capstone',  
-    election_start_date: '2020-03-01T00:00:00.000Z',
-    election_end_date: '2021-01-01T00:00:00.000Z',
+    election_name: 'Incomplete Election 2020',
+    election_description: 'No Advanced Polling Test',  
+    election_start_date: '2021-03-01T00:00:00.000Z',
+    election_end_date: '2022-01-01T00:00:00.000Z',
     advanced_polling: false,
     advanced_start_date: '',
     advanced_end_date: '',
     created_at: '2020-01-01T00:00:00.000Z',
     updated_at: '2020-02-01T00:00:00.000Z',
-    locked: 1, // 0 - unlocked(editable), 1 - locked(not running/in progress/completed)
+    locked: 0, // 0 - unlocked(editable), 1 - locked(not running/in progress/completed)
     progress: 0, // 0 - not running, 1 - in progress, 2 - completed
-    disabled: 0, // 0 - deleted election, 1 - valid election
-    channel_name: 'test-election-2020',
-    contract_name: 'voting_contract',
-    __v: 0
-})
-
-electionDB.election.insert({
-    election_id: 'c88aeee2-134b-403c-bc37-651a890548c1',
-    election_name: 'User Disabled Election 2020',
-    election_description: 'No Advanced Polling for Blockchain Voting Capstone',  
-    election_start_date: '2020-03-01T00:00:00.000Z',
-    election_end_date: '2021-01-01T00:00:00.000Z',
-    advanced_polling: false,
-    advanced_start_date: '',
-    advanced_end_date: '',
-    created_at: '2020-01-01T00:00:00.000Z',
-    updated_at: '2020-02-01T00:00:00.000Z',
-    locked: 1, // 0 - unlocked(editable), 1 - locked(not running/in progress/completed)
-    progress: 0, // 0 - not running, 1 - in progress, 2 - completed
-    disabled: 0, // 0 - deleted election, 1 - valid election
-    channel_name: 'test-election-2020',
-    contract_name: 'voting_contract',
+    disabled: 0, // 0 - disabled election, 1 - valid election
+    channel_name: '',
+    contract_name: '',
     __v: 0
 })
 
