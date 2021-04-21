@@ -25,7 +25,8 @@ async function loadUser(req, res, next) {
 async function login(req, res) {
     try {
         const login = req.body;
-        if (!login || !login.hasOwnProperty['username'] || !login.hasOwnProperty['password']) {
+
+        if (!login || !login.hasOwnProperty('username') || !login.hasOwnProperty('password')) {
             throw Error("missing username/password");
         }
 
