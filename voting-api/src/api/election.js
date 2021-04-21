@@ -1,6 +1,7 @@
 const ElectionDB = require("../controllers/ElectionDBController");
 
 async function loadElection(req, res, next) {
+    console.log('loading election')
     const electionId = req.params.id
     try {
         if (!electionId) {
@@ -15,11 +16,14 @@ async function loadElection(req, res, next) {
     }
 }
 
-async function getElections(req, res, next) {
+
+/*
+* Responds with all valid elections
+*/
+async function getElections(req, res) {
     try {
         const data = await ElectionDB.getAllElection();
         res.json(data);
-        // next();
     } catch (error) {
         console.log(error);
         return res.status(500).send({ message: error.message });
