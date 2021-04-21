@@ -24,7 +24,6 @@ const electionStatusSchema = new Schema({
     vote_status: {
         type: Number,
         min: [0, 'Invalid vote status'],
-        max: [2, 'Invalid vote status'],
     }
 })
 
