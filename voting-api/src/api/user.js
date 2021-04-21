@@ -29,7 +29,7 @@ async function login(req, res) {
     try {
         const login = req.body;
         if (!login || !login.hasOwnProperty('username') || !login.hasOwnProperty('password')) {
-            throw Error("missing username/password");
+            throw Error("Invalid username or password");
         }
 
         const user = await UserDB.getUserByEmail(login.username)
@@ -53,7 +53,7 @@ async function login(req, res) {
             }
             res.json(response);
         } else {
-            throw Error("invalid username/password");
+            throw Error("Invalid username or password");
         }
 
     } catch (error) {
