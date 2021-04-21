@@ -12,11 +12,15 @@ function prettyJSONString(inputString) {
     return JSON.parse(inputString);
 }
 
-// Submit vote as transaction
+/*
+* Submit vote as transaction to the blockchain network
+* Attempt to submit followed by a query to ensure ballot is commited
+*/ 
 async function submitBallotTransaction(ballot, channel) {
     const gateway = await connectGateway()
-    const network = await gateway.getNetwork(channel)
-    const contract = network.getContract('ballot-contract');
+    // const network = await gateway.getNetwork(channel)
+    const network = await gateway.getNetwork("test-channel2")
+    const contract = network.getContract('unique-test');
 
     // Parse out ballot information
     const voter_id = ballot.id
@@ -32,21 +36,54 @@ async function submitBallotTransaction(ballot, channel) {
         // Blockchain errors include unable to read world state, or ballot already exists
         // Requires refactoring of chaincode and research on the best strategy to parse out errors as it is a string message
         await contract.submitTransaction('CreateBallot', voter_id, elec_id, dist_id, cand_id, timestamp)
-		let query = await contract.evaluateTransaction('ReadBallot',voter_id);
+        let query = await contract.evaluateTransaction('ReadBallot', voter_id);
         const result = prettyJSONString(query.toString())
         return result;
     } catch (error) {
-        if (error.message == 'the ballot does not exist' ) {
-            throw Error('ballot exists')
+        // Possible errors
+        // 1. TimeoutError - fabric
+        // 2. ballot already exists, cannot read world state, connection errors - blockchain
+        if (error instanceof TimeoutError) {
+            throw Error('transaction timed out')
         } else {
-            console.log(error)
-            throw Error('unable to process ballot')  
-        }      
-    } finally {
+            throw Error('unable to process ballot')
+        }
+    }
+    finally {
         gateway.disconnect()
     }
 }
 
+/*
+* Query vote as transaction to the blockchain network
+* Returns the ballot object
+*/ 
+async function queryBallotExist(user, channel) {
+    const gateway = await connectGateway()
+    // const network = await gateway.getNetwork(channel)
+    const network = await gateway.getNetwork("test-channel2")
+    const contract = network.getContract('unique-test');
+
+    const voterId = user.voter_id
+    try {
+        let query = await contract.evaluateTransaction('ReadBallot', voterId);
+        const result = prettyJSONString(query.toString())
+        return result;
+    } catch (error) {
+        // TODO - Fix error messages on blockchain to respond with actual errors instead of error string
+        // Possible errors
+        // 1. TimeoutError - fabric
+        // 2. ballot does not exists - blockchain
+        if (error instanceof TimeoutError)
+            throw Error('transaction timed out')
+        else {
+            throw Error('ballot does not exists')
+        }
+    } finally {
+        gateway.disconnect()
+    }
+
+}
 
 // async queryAllVotes() {
 //     try {
@@ -58,4 +95,4 @@ async function submitBallotTransaction(ballot, channel) {
 //     }
 // }
 
-module.exports = { submitBallotTransaction };
+module.exports = { submitBallotTransaction, queryBallotExist };
