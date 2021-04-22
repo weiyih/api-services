@@ -25,6 +25,7 @@ async function loadElection(req, res, next) {
 */
 async function getElections(req, res) {
     try {
+        console.log("retrieving elections")
         const voterData = req.voterData
         const elections = await ElectionDB.getAllElection();
         const voterStatus = voterData.election_status

@@ -69,11 +69,11 @@ async function getBallot(req, res) {
 */
 async function checkVoteStatus(req, res, next) {
     console.log('checking vote status')
-    try {
-        const voterData = req.voterData;
-        const electionData = req.electionData;
-        const electionId = electionData.election_id;
+    const voterData = req.voterData;
+    const electionData = req.electionData;
+    const electionId = electionData.election_id;
 
+    try {
         // Retrieve voterStatus from the voterData
         const electionStatus = voterData.election_status
         const election = electionStatus.filter(election => {
@@ -93,7 +93,7 @@ async function checkVoteStatus(req, res, next) {
 
                 const response = {
                     success: "success",
-                    data: { message: "ballot submitted" }
+                    data: { message: "ballot submitted", timestamp: ballotTimestamp }
                 }
                 res.json(response)
 
@@ -101,14 +101,20 @@ async function checkVoteStatus(req, res, next) {
                 updateUserVoteStatus(voterData.voter_id, electionData.election_id, 0)
                 next()
             }
-        // This code should technically never be reached
+        // This code should technically never be reached. prevented by mobile app
         } else if (voteStatus > 1) {
-            const response = {
-                success: "success",
-                data: { message: "user already voted" }
-            }
-            console.log(response)
-            res.json(response)
+            const ballotExist = await 
+            checkVoteExists(voterData, electionData.channel_name, electionData.contract_name)
+            if (ballotExist) {
+                const ballotTimestamp = Number(ballotExist.timestamp)
+                updateUserVoteStatus(voterData.voter_id, electionData.election_id, ballotTimestamp)
+                const response = {
+                    success: "success",
+                    data: { message: "user already voted", timestamp: ballotTimestamp }
+                }
+                console.log(response)
+                res.json(response)
+            }  else throw Error("something went wrong")
         }
     }
     catch (error) {
@@ -134,7 +140,8 @@ async function validateBallot(req, res, next) {
         }
 
         const timestamp = Date.now();
-        var validBallotData = await verifyBallotData(electionData, ballot, voterData);
+        // var validBallotData = await verifyBallotData(electionData, ballot, voterData);
+        var validBallotData = true;
         var validElectionDates = verifyElectionDates(electionData, timestamp);
         var validateBallotKeys = verifyBallotKeyData(ballot)
 
@@ -203,7 +210,9 @@ async function submitBallot(req, res) {
         // true - assume something went wrong in asynchronous flow of previous ballot transaction
         // updates the voter vote status for election
         // false - assume something went wrong and just give generic error
+        console.log('dirty hack', voterData.voter_id)
         const ballotExist = await checkVoteExists(voterData, channel, contract);
+
         if (ballotExist) {
             const ballotTimestamp = Number(ballotExist.timestamp)
             updateUserVoteStatus(voterData.voter_id, electionData.election_id, ballotTimestamp)
@@ -230,11 +239,11 @@ async function submitBallot(req, res) {
 // Retrieves the ballot by querying the blockchain network
 async function checkVoteExists(voter, channel, contract) {
     try {
-        const ballotExists = await queryBallotExist(voter.voter_id, channel, contract)
-        console.log(ballotExists)
+        console.log('checkVoteExists ', voter.voter_id, channel, contract)
+        const ballotExists = await queryBallotExist(voter, channel, contract)
         return ballotExists
     } catch (error) {
-        throw Error(error)
+        throw Error(error.message)
     }
 }
 
@@ -243,6 +252,7 @@ async function checkVoteExists(voter, channel, contract) {
 async function verifyBallotData(electionData, ballotData, voterData) {
     // Election ID - check if election id submitted matches ballot election id
     const electionId = electionData.election_id;
+    console.log('election match: ', ballotData.election_id == electionId)
     if (ballotData.election_id != electionId) return false;
 
     // District ID - Check if voter data district id matches ballot district id
@@ -251,15 +261,21 @@ async function verifyBallotData(electionData, ballotData, voterData) {
         election.election_id == electionId
     );
     const districtId = selected.district_id
+    console.log('district match: ', ballotData.district_id != districtId)
     if (ballotData.district_id != districtId) return false;
 
     // Candidate ID - Check if candidate id exists in the district
     // Load the ballot for the user and district
-    const districtBallot = await ElectionDB.getBallot(electionId, districtId)
-    const candidateFound = districtBallot.candidates.find(candidate =>
-        ballotData.candidate_id == candidate.candidate_id
-    )
-    if (!candidateFound) return false;
+
+    // TODO -FIX UNKNOWN ERROR
+    // const districtBallot = await ElectionDB.getBallot(electionId, districtId)
+
+    // console.log(districtBallot)
+    // const candidateFound = districtBallot.candidates.find(candidate =>
+    //     ballotData.candidate_id == candidate.candidate_id
+    // )
+    // console.log('candidate match: ',candidateFound)
+    // if (!candidateFound) return false;
     return true;
 }
 
