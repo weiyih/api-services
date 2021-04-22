@@ -35,10 +35,10 @@ services:
     container_name: election-web
     build:
       context: ./election-web
-      dockerfile: : election-web.Dockerfile
+      dockerfile: election-web.Dockerfile
     restart: always
     ports:
-      - 8080:4201
+      - 4200:4200
 
   # DEV TESTING purposes only - REMOVE
   mongodb-dev:
