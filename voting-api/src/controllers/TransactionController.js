@@ -2,6 +2,7 @@
 
 const { Wallets, Gateway, TimeoutError, X509WalletMixin, TxEventHandler, TxEventHandlerFactory } = require('fabric-network');
 const { connectGateway } = require('./network');
+const { v4 } = require('uuid')
 // const NetworkGatewayFactory = require('./NetworkGatewayFactory')
 
 // Provides persisten reusable connection to peer within netowrk
@@ -22,10 +23,10 @@ async function submitBallotTransaction(ballot, channel, contractName) {
     const contract = network.getContract(contractName);
 
     // Parse out ballot information
-    const voter_id = ballot.id
-    const elec_id = ballot.election_id
-    const dist_id = ballot.district_id
-    const cand_id = ballot.candidate_id
+    const voter_id = ballot.id;
+    const election_id = ballot.election_id
+    const district_id = ballot.district_id
+    const candidate_id = ballot.candidate_id
     const timestamp = ballot.timestamp
 
     try {
@@ -34,7 +35,7 @@ async function submitBallotTransaction(ballot, channel, contractName) {
         // TODO - Refactor to handle TimeoutErrors, and parse out blockchain errors
         // Blockchain errors include unable to read world state, or ballot already exists
         // Requires refactoring of chaincode and research on the best strategy to parse out errors as it is a string message
-        await contract.submitTransaction('CreateBallot', voter_id, elec_id, dist_id, cand_id, timestamp)
+        await contract.submitTransaction('CreateBallot', voter_id, election_id, district_id, candidate_id, timestamp)
         let query = await contract.evaluateTransaction('ReadBallot', voter_id);
         const result = prettyJSONString(query.toString())
         return result;
@@ -58,6 +59,7 @@ async function submitBallotTransaction(ballot, channel, contractName) {
 * Returns the ballot object
 */ 
 async function queryBallotExist(user, channel, contractName) {
+    console.log('querying ballot')
     const gateway = await connectGateway()
     const network = await gateway.getNetwork(channel)
     const contract = network.getContract(contractName);
@@ -82,15 +84,4 @@ async function queryBallotExist(user, channel, contractName) {
     }
 
 }
-
-// async queryAllVotes() {
-//     try {
-//         const result = await this.contract.submitTransaction('queryAllVotes');
-//         // console.log(result.toString());
-//         return (result.toString());
-//     } catch (error) {
-//         console.log(error);
-//     }
-// }
-
 module.exports = { submitBallotTransaction, queryBallotExist };
