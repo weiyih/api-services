@@ -1,0 +1,19 @@
+mat-card .election-card{
+  max-width:800px;
+}
+
+.election-form {
+  max-width: 800px;
+  margin: 5px;
+  display:block;
+  /* background-color: rgb(127, 220, 243) */
+}
+
+.form-election-name {
+  width: 400px;
+
+}
+
+.election-form input {
+  width: 400px;
+}

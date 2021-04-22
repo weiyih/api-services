@@ -1,0 +1,60 @@
+<!-- <form [formGroup]="candidateForm">
+  
+    <mat-card class="mat-elevation-z8">
+      <mat-table
+        #candidateTable
+        class="mat-elevation-z0"
+        [dataSource]="dataSource"
+        [trackBy]="trackRows"
+      >
+        <ng-container matColumnDef="names">
+          <mat-cell *matCellDef="let row; let i = index">
+            <ng-container [formGroup]="row">
+              <mat-form-field>
+                <mat-label>Candidate Name</mat-label>
+                <input
+                  matInput
+                  placeholder="Name to display on ballot"
+                  formControlName="names"
+                  required
+                />
+              </mat-form-field>
+            </ng-container>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="district_id">
+          <mat-cell *matCellDef="let row; let i = index">
+            <ng-container [formGroup]="row">
+              <mat-form-field>
+                <mat-label>District</mat-label>
+                <input
+                  matInput
+                  formControlName="district_id"
+                  required
+                />
+              </mat-form-field>
+            </ng-container>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="remove">
+          <mat-cell *matCellDef="let row; let i = index">
+            <ng-container [formGroup]="row">
+              <mat-form-field>
+                <mat-label>Delete</mat-label>
+                <input
+                  matInput
+                  formControlName="remove"
+                  required
+                />
+              </mat-form-field>
+            </ng-container>
+          </mat-cell>
+        </ng-container>
+
+
+      <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+    </mat-table>
+    </mat-card>
+  </form> -->

@@ -1,0 +1,90 @@
+<mat-toolbar primary>
+  <button mat-icon-button>
+    <mat-icon>chevron_left</mat-icon>
+  </button>
+  <span>Election Details</span>
+</mat-toolbar>
+<mat-divider></mat-divider>
+
+<mat-card class="mat-elevation-z8">
+  <form [formGroup]="electionForm" class="election-form">
+    <mat-card class="mat-elevation-z8">
+      <h3>Election Name</h3>
+      <mat-form-field class="form-full-width">
+        <mat-label>Election Name</mat-label>
+        <input matInput formControlName="election_name" size="600px;" />
+      </mat-form-field>
+      <br />
+
+      <h3>Election Dates</h3>
+      <mat-form-field appearance="fill">
+        <mat-label>Election Start Date</mat-label>
+        <input
+          matInput
+          [matDatepicker]="startDate"
+          formControlName="election_start_date"
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="startDate"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #startDate></mat-datepicker>
+      </mat-form-field>
+      <span>&nbsp;</span>
+      <mat-form-field color="accent" appearance="fill">
+        <mat-label>Election End Date</mat-label>
+        <input
+          matInput
+          [min]="minEndDate"
+          [matDatepicker]="endDate"
+          formControlName="election_end_date"
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="endDate"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #endDate></mat-datepicker>
+      </mat-form-field>
+      <h3>Advanced Polling</h3>
+
+<!-- 
+      <mat-form-field appearance="fill">
+        <mat-radio-group aria-label="Allow advanced polling">
+          <mat-radio-button value=0 formControlName='advanced_polling'>Enable</mat-radio-button >
+          <mat-radio-button value=1 formControlName='advanced_polling'>Disable</mat-radio-button >
+        </mat-radio-group>
+        
+        <mat-checkbox formControlName="advanced_polling">Disable select</mat-checkbox>
+      </mat-form-field> -->
+      <br />
+      <mat-form-field color="accent" appearance="fill">
+        <mat-label>Advanced Polling Start Date</mat-label>
+        <input
+          matInput
+          [matDatepicker]="advStartDate"
+          formControlName="advanced_start_date"
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="advStartDate"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #advStartDate></mat-datepicker>
+      </mat-form-field>
+      <span>&nbsp;</span>
+      <mat-form-field color="accent" appearance="fill">
+        <mat-label>Advanced Polling End Date</mat-label>
+        <input
+          matInput
+          [matDatepicker]="advEndDate"
+          formControlName="advanced_end_date"
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="advEndDate"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #advEndDate></mat-datepicker>
+      </mat-form-field>
+      <br />
+    </mat-card>
+  </form>
+</mat-card>
