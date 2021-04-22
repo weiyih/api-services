@@ -31,14 +31,14 @@ services:
     links:
       - mongo-master
 
-  election-web:
-    container_name: election-web
-    build:
-      context: ./election-web
-      dockerfile: election-web.Dockerfile
-    restart: always
-    ports:
-      - 4200:4200
+  # election-web:
+  #   container_name: election-web
+  #   build:
+  #     context: ./election-web
+  #     dockerfile: election-web.Dockerfile
+  #   restart: always
+  #   ports:
+  #     - 4200:4200
 
   # DEV TESTING purposes only - REMOVE
   mongodb-dev:
