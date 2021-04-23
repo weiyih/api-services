@@ -1,4 +1,5 @@
 const ElectionDB = require("../controllers/ElectionDBController");
+const TransactionController = require("../controllers/TransactionController");
 
 async function loadElection(req, res, next) {
     console.log('loading election')
@@ -39,7 +40,7 @@ async function getElections(req, res) {
             const match = voterStatus.find(status => status.election_id == election.election_id);
             if (match) return { ...election._doc, vote_status: match.vote_status };
         });
-        
+
         const response = {
             success: "success",
             data: output
@@ -54,4 +55,35 @@ async function getElections(req, res) {
     }
 }
 
-module.exports = { loadElection, getElections }
+
+async function queryElectionVotes(req, res) {
+    try {
+        console.log("querying elections")
+        const electionId = req.params.id
+        const election = await ElectionDB.getElection(electionId)
+        const votes = await TransactionController.queryAllBallot(election.channel_name, election.contract_name)
+        res.json(votes)
+    } catch (error) {
+        console.log(error);
+        res.status(404).end()
+    }
+}
+
+async function queryElection(req, res) {
+    try {
+
+        console.log("retrieving elections")
+        const elections = await ElectionDB.getAllElection();
+
+        // const response = {
+        //     success: "success",
+        //     data: output
+        // }
+        res.json(elections);
+    } catch (error) {
+        res.status(404).end()
+    }
+}
+
+
+module.exports = { loadElection, getElections, queryElection, queryElectionVotes }

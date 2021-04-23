@@ -56,7 +56,7 @@ class ElectionDB {
       return data;
     } catch (error) {
       console.log(error);
-      throw (`Error - Unable to retrieve election: ${electionId} from DB`)
+      throw (`unable to retrieve election: ${electionId} from database`)
     }
 
   }
@@ -78,7 +78,7 @@ class ElectionDB {
     return data[0];
   } catch(error) {
     console.log(error);
-    throw ("Error - Unable to retrieve ballot from DB")
+    throw ("unable to retrieve ballot from database")
   }
 }
 

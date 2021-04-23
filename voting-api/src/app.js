@@ -9,7 +9,7 @@ const logger = require("morgan");
 const { authenticate } = require("./services/auth")
 const { loadUser, login, registerBiometric } = require("./api/user")
 const { getBallot, validateBallot, submitBallot, checkVoteStatus } = require("./api/ballot");
-const { loadElection, getElections } = require("./api/election");
+const { loadElection, getElections, queryElection, queryElectionVotes } = require("./api/election");
 require("dotenv").config();
 
 /**
@@ -64,5 +64,17 @@ app.post("/v1/submit/:id",
     validateBallot,
     submitBallot
 );
+
+
+/* Temporary Admin Routes */
+
+app.post("/v1/admin/election",
+    queryElection
+)
+
+app.post("/v1/admin/query/:id",
+    queryElectionVotes
+)
+
 
 module.exports = app;
