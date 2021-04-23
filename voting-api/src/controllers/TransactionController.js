@@ -17,9 +17,9 @@ function prettyJSONString(inputString) {
 * Submit vote as transaction to the blockchain network
 * Attempt to submit followed by a query to ensure ballot is commited
 */ 
-async function submitBallotTransaction(ballot, channel, contractName) {
+async function submitBallotTransaction(ballot, channelName, contractName) {
     const gateway = await connectGateway()
-    const network = await gateway.getNetwork(channel)
+    const network = await gateway.getNetwork(channelName)
     const contract = network.getContract(contractName);
 
     // Parse out ballot information
@@ -58,10 +58,10 @@ async function submitBallotTransaction(ballot, channel, contractName) {
 * Query vote as transaction to the blockchain network
 * Returns the ballot object
 */ 
-async function queryBallotExist(user, channel, contractName) {
+async function queryBallotExist(user, channelName, contractName) {
     console.log('querying ballot')
     const gateway = await connectGateway()
-    const network = await gateway.getNetwork(channel)
+    const network = await gateway.getNetwork(channelName)
     const contract = network.getContract(contractName);
 
     const voterId = user.voter_id
@@ -82,6 +82,22 @@ async function queryBallotExist(user, channel, contractName) {
     } finally {
         gateway.disconnect()
     }
-
 }
-module.exports = { submitBallotTransaction, queryBallotExist };
+
+async function queryAllBallot(channelName, contractName) {
+    const gateway = await connectGateway()
+    const network = await gateway.getNetwork(channelName)
+    const contract = network.getContract(contractName);
+
+    try {
+        let query = await contract.evaluateTransaction('GetAllBallots');
+        const result = prettyJSONString(query.toString())
+        return result;
+    } catch (error) {
+        throw Error(error.message)   
+    } finally {
+        gateway.disconnect()
+    }
+}
+
+module.exports = { submitBallotTransaction, queryBallotExist, queryAllBallot };
