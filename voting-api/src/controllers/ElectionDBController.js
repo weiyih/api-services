@@ -71,7 +71,7 @@ class ElectionDB {
       .select("-_id -__v"); //Strips objectId(_id) and document version(__v)
 
     const election = await query.exec();
-    const data = election.districts.filter( ballot => {
+    const data = election.districts.filter(ballot => {
       return ballot.district_id == districtId;
     })
     // Return object instead of array
@@ -79,6 +79,22 @@ class ElectionDB {
   } catch(error) {
     console.log(error);
     throw ("unable to retrieve ballot from database")
+  }
+
+
+  // Temporary - admin call
+  async getAllAdminElection() {
+    // Strips away objectId(_id) and document version(__v)
+    const query = Election.find()
+      .select("-_id -__v");
+    try {
+      const data = await query.exec();
+      return data;
+      // next();
+    } catch (error) {
+      // TODO - handle error
+      console.log(error);
+    }
   }
 }
 

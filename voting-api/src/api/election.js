@@ -73,7 +73,7 @@ async function queryElection(req, res) {
     try {
 
         console.log("retrieving elections")
-        const elections = await ElectionDB.getAllElection();
+        const elections = await ElectionDB.getAllAdminElection();
 
         // const response = {
         //     success: "success",
