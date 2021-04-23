@@ -111,6 +111,18 @@ class UserDB {
             throw Error(error)
         }
     }
+
+    async getAllUsers() {
+        const query = User.find()
+            .select("-_id -__v -password -biometric -device_id");
+        try {
+            const data = await query.exec();
+            return data;
+        } catch (error) {
+            console.log(error);
+            throw Error(error)
+        }
+    }
 }
 
 module.exports = new UserDB();

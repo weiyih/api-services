@@ -75,6 +75,19 @@ class VoterDB {
         }
     }
 
+
+    async getAllVoters() {
+        const query = Voter.find()
+            .select("-_id -__v");
+        try {
+            const data = await query.exec();
+            return data;
+        } catch (error) {
+            console.log(error);
+            throw Error(error)
+        }
+    }
+
     // Updates Voter document to reflect the User intention to vote online when registering
     // async updateUserOnlineVote(voterId) {
     //   const query = Voter.findOneAndUpdate(

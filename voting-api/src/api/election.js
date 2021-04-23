@@ -1,5 +1,4 @@
 const ElectionDB = require("../controllers/ElectionDBController");
-const TransactionController = require("../controllers/TransactionController");
 
 async function loadElection(req, res, next) {
     console.log('loading election')
@@ -55,35 +54,4 @@ async function getElections(req, res) {
     }
 }
 
-
-async function queryElectionVotes(req, res) {
-    try {
-        console.log("querying elections")
-        const electionId = req.params.id
-        const election = await ElectionDB.getElection(electionId)
-        const votes = await TransactionController.queryAllBallot(election.channel_name, election.contract_name)
-        res.json(votes)
-    } catch (error) {
-        console.log(error);
-        res.status(404).end()
-    }
-}
-
-async function queryElection(req, res) {
-    try {
-
-        console.log("retrieving elections")
-        const elections = await ElectionDB.getAllAdminElection();
-
-        // const response = {
-        //     success: "success",
-        //     data: output
-        // }
-        res.json(elections);
-    } catch (error) {
-        res.status(404).end()
-    }
-}
-
-
-module.exports = { loadElection, getElections, queryElection, queryElectionVotes }
+module.exports = { loadElection, getElections }

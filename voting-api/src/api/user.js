@@ -118,6 +118,7 @@ async function signupUser(req, res) {
 //         });
 }
 
+// Use-case registration match device id
 async function verifyUser(req, res) {
 
 }

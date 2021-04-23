@@ -9,7 +9,8 @@ const logger = require("morgan");
 const { authenticate } = require("./services/auth")
 const { loadUser, login, registerBiometric } = require("./api/user")
 const { getBallot, validateBallot, submitBallot, checkVoteStatus } = require("./api/ballot");
-const { loadElection, getElections, queryElection, queryElectionVotes } = require("./api/election");
+const { loadElection, getElections } = require("./api/election");
+const { queryElectionVotes, queryElection, queryUsers, queryVoters } = require("./api/admin");
 require("dotenv").config();
 
 /**
@@ -75,6 +76,15 @@ app.post("/v1/admin/election",
 app.post("/v1/admin/query/:id",
     queryElectionVotes
 )
+
+app.post("/v1/admin/users",
+    queryUsers
+)
+
+app.post("/v1/admin/voters",
+    queryVoters
+)
+
 
 
 module.exports = app;
