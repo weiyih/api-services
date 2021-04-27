@@ -150,7 +150,6 @@ electionDB.election.insert({
     locked: 1, // 0 - unlocked(editable), 1 - locked(not running/in progress/completed)
     progress: 1, // 0 - not running, 1 - in progress, 2 - completed
     disabled: 1, // 0 - deleted election, 1 - valid election
-    channel_name: 'test-election-2020',
     channel_name: 'oakville-municipal-election-2022',
     contract_name: 'oakville-municipal-election-2022',
     __v: 0
