@@ -6,6 +6,7 @@ require("dotenv").config();
 // Models
 let Election;
 let Ballot;
+let Candidate;
 
 class ElectionDB {
   constructor() {
@@ -95,6 +96,25 @@ class ElectionDB {
       // TODO - handle error
       console.log(error);
     }
+  }
+
+  // Temporary - admin call
+  async getAllAdminCandidates(electionId) {
+    // Strips away objectId(_id) and document version(__v)
+    const query = Ballot.findOne()
+      .where("election_id").equals(electionId)
+      .select("-_id -__v");
+    try {
+      const data = await query.exec();
+      return data;
+      // next();
+    } catch (error) {
+      // TODO - handle error
+      console.log(error);
+    }
+
+
+
   }
 }
 

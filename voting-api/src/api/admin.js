@@ -44,14 +44,24 @@ async function queryVoters(req, res) {
 
         console.log("retrieving voters")
         const voters = await VoterDB.getAllVoters();
-        
+
         res.json(voters);
     } catch (error) {
         res.status(404).end()
     }
 }
 
+async function queryCandidates(req, res) {
+    try {
+        const electionId = req.params.id
+        console.log("retrieving candidates")
+        const candidates = await ElectionDB.getAllAdminCandidates(electionId)
+
+        res.json(candidates);
+    } catch (error) {
+        res.status(404).end()
+    }
+}
 
 
-
-module.exports = { queryUsers, queryVoters, queryElection, queryElectionVotes }
+module.exports = { queryUsers, queryVoters, queryElection, queryElectionVotes, queryCandidates }

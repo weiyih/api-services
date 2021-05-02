@@ -10,7 +10,7 @@ const { authenticate } = require("./services/auth")
 const { loadUser, login, registerBiometric } = require("./api/user")
 const { getBallot, validateBallot, submitBallot, checkVoteStatus } = require("./api/ballot");
 const { loadElection, getElections } = require("./api/election");
-const { queryElectionVotes, queryElection, queryUsers, queryVoters } = require("./api/admin");
+const { queryElectionVotes, queryElection, queryUsers, queryVoters, queryCandidates } = require("./api/admin");
 require("dotenv").config();
 
 /**
@@ -85,6 +85,8 @@ app.post("/v1/admin/voters",
     queryVoters
 )
 
-
+app.post("/v1/admin/election/:id", 
+    queryCandidates
+)
 
 module.exports = app;
