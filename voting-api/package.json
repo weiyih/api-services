@@ -23,7 +23,7 @@
         "fabric-network": "^2.2.5",
         "googleapis": "^51.0.0",
         "helmet": "^3.22.0",
-        "jsonwebtoken": "^8.5.1",
+        "jsonwebtoken": "^9.0.0",
         "moment": "^2.25.3",
         "mongoose": "^5.10.18",
         "mongoose-update-versioning": "^0.1.1",
